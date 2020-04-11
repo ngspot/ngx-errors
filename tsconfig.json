@@ -22,7 +22,12 @@
       "es2018",
       "dom"
     ],
-    "paths": {}
+    "paths": {
+      "ngx-errors": [
+        "dist/ngx-errors/ngx-errors",
+        "dist/ngx-errors"
+      ]
+    }
   },
   "angularCompilerOptions": {
     "fullTemplateTypeCheck": true,
