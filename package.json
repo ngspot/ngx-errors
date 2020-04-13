@@ -15,7 +15,7 @@
     "build:lib": "ng build ngx-errors --prod",
     "test:lib": "ng test ngx-errors --code-coverage",
     "postbuild:lib": "copyfiles README.md logo.png dist/ngx-errors",
-    "release": "cd projects/ngx-errors && standard-version --infile ../../../CHANGELOG.md",
+    "release": "cd projects/ngx-errors && standard-version --infile ../../CHANGELOG.md",
     "test:lib:headless": "cross-env CI=true npm run test:lib"
   },
   "private": true,
