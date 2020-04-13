@@ -1,20 +1,19 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { NgxErrorsComponent } from './ngx-errors.component';
+import { HomeComponent } from './home.component';
 
-describe('NgxErrorsComponent', () => {
-  let component: NgxErrorsComponent;
-  let fixture: ComponentFixture<NgxErrorsComponent>;
+describe('HomeComponent', () => {
+  let component: HomeComponent;
+  let fixture: ComponentFixture<HomeComponent>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ NgxErrorsComponent ]
-    })
-    .compileComponents();
+      declarations: [HomeComponent],
+    }).compileComponents();
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(NgxErrorsComponent);
+    fixture = TestBed.createComponent(HomeComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

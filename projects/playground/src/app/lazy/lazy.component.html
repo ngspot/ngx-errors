@@ -1,0 +1,17 @@
+<form [formGroup]="form" (submit)="submit()">
+  <input type="text" formControlName="firstName" />
+
+  <div ngxErrors="firstName">
+    <div ngxError="required">First name is required</div>
+  </div>
+
+  <div formGroupName="address">
+    <input type="text" formControlName="street" />
+
+    <div ngxErrors="street">
+      <div ngxError="required">Street name is required</div>
+    </div>
+  </div>
+
+  <button type="submit">Submit</button>
+</form>

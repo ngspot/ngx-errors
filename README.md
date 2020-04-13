@@ -1,5 +1,5 @@
 <p align="center">
- <img width="20%" height="20%" src="./logo.svg">
+ <img width="20%" height="20%" src="./logo.png">
 </p>
 
 <br />
@@ -12,22 +12,27 @@
 [![ngneat](https://img.shields.io/badge/@-ngneat-383636?style=flat-square&labelColor=8f68d4)](https://github.com/ngneat/)
 [![spectator](https://img.shields.io/badge/tested%20with-spectator-2196F3.svg?style=flat-square)](https://github.com/ngneat/spectator)
 
-> The Library Slogan
+> Reactive forms validation for pros
 
-Lorem ipsum dolor sit amet, consectetur adipisicing elit. Aliquid assumenda atque blanditiis cum delectus eligendi ipsam iste iure, maxime modi molestiae nihil obcaecati odit officiis pariatur quibusdam suscipit temporibus unde.
-Accusantium aliquid corporis cupiditate dolores eum exercitationem illo iure laborum minus nihil numquam odit officiis possimus quas quasi quos similique, temporibus veritatis? Exercitationem, iure magni nulla quo sapiente soluta. Esse?
+I solely missed `ng-messages` directive from AngularJs, so I created this one to use in Angular 2+.
+In contrast to the one from AngularJs, this one requires you to pass the control name to the directive, instead of its errors.
+This allowed me to hook in to the status of control, like its `dirty` state, and display validation messages according to that status.
+A nice side effect of that decision is less boilerplate code.
 
 ## Features
 
-- ✅ One
-- ✅ Two
-- ✅ Three
+- ✅ Simple syntax that reduces boilerplate
+- ✅ Configure when to display error messages for an app further reducing boilerplate
+- ✅ Seamless integration with Reactive Forms
+- ✅ Works with nested forms
 
 ## Table of Contents
 
 - [Installation](#installation)
 - [Usage](#usage)
-- [FAQ](#faq)
+- [Advanced configuration](#configuration)
+- [Styling](#styling)
+- [Development](#development)
 
 ## Installation
 
@@ -41,17 +46,150 @@ Accusantium aliquid corporis cupiditate dolores eum exercitationem illo iure lab
 
 ## Usage
 
-Lorem ipsum dolor sit amet, consectetur adipisicing elit. Aliquid assumenda atque blanditiis cum delectus eligendi ipsam iste iure, maxime modi molestiae nihil obcaecati odit officiis pariatur quibusdam suscipit temporibus unde.
+Import library into your application module:
 
 ```ts
-function helloWorld() {}
+import { NgxErrorsModule } from '@ngspot/ngx-errors'; // <-- import the module
+
+@NgModule({
+  imports: [
+    NgxErrorsModule, // <-- include it in your app module
+  ],
+})
+export class MyAppModule {}
 ```
 
-## FAQ
+### Use-case with a form:
 
-## How to ...
+```ts
+@Component({
+  selector: 'my-component',
+  template: `
+    <form [formGroup]="myForm">
+      <input formControlName="email" type="email" />
 
-Lorem ipsum dolor sit amet, consectetur adipisicing elit. Aliquid assumenda atque blanditiis cum delectus eligendi ips
+      <div ngxErrors="email">
+        <div ngxError="required">Email is required</div>
+      </div>
+    </form>
+  `,
+})
+export class MyComponent implements OnInit {
+  myForm: FormGroup;
+
+  constructor(private fb: FormBuilder) {
+    this.myForm = this.fb.group({
+      email: ['', Validators.required],
+    });
+  }
+}
+```
+
+### Use-case with a simple FormControl:
+
+```ts
+@Component({
+  selector: 'my-component',
+  template: `
+    <input [formControl]="email" placeholder="Email" type="email" />
+
+    <div [ngxErrors]="email">
+      <div ngxError="required">Email is required</div>
+    </div>
+  `,
+})
+export class MyComponent implements OnInit {
+  email = new FormControl('', Validators.required);
+}
+```
+
+## Configuration
+
+You configure when to show messages for your whole module by using `.configure()` method:
+
+```ts
+@NgModule({
+  imports: [
+    NgxErrorsModule.configure({ ... }) // <- provide configuration here
+  ],
+})
+export class MyAppModule {}
+```
+
+Alternatively, use dependency injection to provide configuration at a component level:
+
+```ts
+import { ErrorsConfiguration } from '@ngspot/ngx-errors';
+
+const myConfig = { ... }; // <- specify your config
+
+@Component({
+  ...
+  providers: [
+    { provide: ErrorsConfiguration, useValue: myConfig }
+  ]
+})
+export class MyComponent { }
+```
+
+Here's configuration object interface:
+
+```ts
+interface IErrorsConfiguration {
+  /**
+   * Configure errors to show only when the corresponding input is dirty.
+   *
+   * Default is `true`.
+   */
+  showErrorsOnlyIfInputDirty?: boolean;
+
+  /**
+   * Configure errors to show only when form is submitted.
+   * Upon form submission shows errors even if `showErrorsOnlyIfInputDirty = true`
+   * and some of the inputs aren't dirty.
+   * Takes effect only when ngxErrors directive is a child of a form.
+   *
+   * Default is `false`.
+   */
+  showErrorsWhenFormSubmitted?: boolean;
+}
+```
+
+## Styling
+
+Just include something similar to the following in your global css file:
+
+```css
+[ngxerrors] {
+  color: red;
+}
+```
+
+## Development
+
+### Basic Workflow
+
+1. Develop
+1. Write specs
+1. Run npm run test:lib,
+1. Run npm run commit, and choose fix or feature
+1. Run npm run release
+1. Run npm run build:lib
+1. Go to the dist directory, and run npm publish
+
+### Scripts
+
+- `build:lib` - Builds the library
+- `test:lib` - Runs tests
+- `test:lib:headless` - Runs tests in headless mode with Chrome
+- `release` - Releases a new version. This will bump the library's version, and update the `CHANGE_LOG` file based on the commit message
+- `release:first` - Creates the first release
+- `commit` - Creates a new commit message based on Angular commit messgae convention
+- `contributors:add` - Adds a new contributor to the `README` file
+
+## License
+
+MIT © [Dmitry Efimenko](mailto:dmitrief@gmail.com)
 
 ## Contributors ✨
 

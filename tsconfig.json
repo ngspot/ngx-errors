@@ -3,13 +3,12 @@
   "compilerOptions": {
     "baseUrl": "./",
     "outDir": "./dist/out-tsc",
-    "noImplicitAny": true,
     "noImplicitReturns": true,
-    "noImplicitThis": true,
     "noFallthroughCasesInSwitch": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
     "strict": true,
     "strictPropertyInitialization": false,
-    "strictNullChecks": true,
     "sourceMap": true,
     "declaration": false,
     "downlevelIteration": true,
@@ -18,13 +17,10 @@
     "moduleResolution": "node",
     "importHelpers": true,
     "target": "es2015",
-    "lib": [
-      "es2018",
-      "dom"
-    ],
+    "lib": ["es2018", "dom"],
     "paths": {
-      "ngx-errors": [
-        "dist/ngx-errors/ngx-errors",
+      "@ngspot/ngx-errors": [
+        "dist/ngx-errors/ngspot-ngx-errors",
         "dist/ngx-errors"
       ]
     }

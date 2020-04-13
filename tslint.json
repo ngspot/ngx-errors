@@ -15,16 +15,23 @@
     "member-ordering": [
       true,
       {
-        "order": ["static-field", "instance-field", "static-method", "instance-method"]
+        "order": [
+          "static-field",
+          "instance-field",
+          "static-method",
+          "instance-method"
+        ]
       }
     ],
-    "no-console": [true, "debug", "info", "time", "timeEnd", "trace"],
+    "no-console": [true, "log", "debug", "info", "time", "timeEnd", "trace"],
     "no-empty": false,
     "no-inferrable-types": [true, "ignore-params"],
     "no-non-null-assertion": true,
+    "no-unused-variable": true,
     "no-redundant-jsdoc": true,
     "no-switch-case-fall-through": true,
     "no-var-requires": false,
+    "no-string-literal": false,
     "object-literal-key-quotes": [true, "as-needed"],
     "space-before-function-paren": {
       "options": {
@@ -36,10 +43,13 @@
       }
     },
     "variable-name": {
-      "options": ["ban-keywords", "check-format", "allow-pascal-case"]
-    },
-    "whitespace": {
-      "options": ["check-branch", "check-decl", "check-operator", "check-separator", "check-type", "check-typecast"]
+      "options": [
+        "ban-keywords",
+        "check-format",
+        "allow-pascal-case",
+        "require-const-for-all-caps",
+        "allow-leading-underscore"
+      ]
     },
     "component-class-suffix": true,
     "contextual-lifecycle": true,

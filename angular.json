@@ -7,7 +7,7 @@
       "projectType": "library",
       "root": "projects/ngx-errors",
       "sourceRoot": "projects/ngx-errors/src",
-      "prefix": "lib",
+      "prefix": "ngx",
       "architect": {
         "build": {
           "builder": "@angular-devkit/build-ng-packagr:build",
@@ -36,9 +36,7 @@
               "projects/ngx-errors/tsconfig.lib.json",
               "projects/ngx-errors/tsconfig.spec.json"
             ],
-            "exclude": [
-              "**/node_modules/**"
-            ]
+            "exclude": ["**/node_modules/**"]
           }
         }
       }
@@ -67,9 +65,7 @@
               "projects/playground/src/favicon.ico",
               "projects/playground/src/assets"
             ],
-            "styles": [
-              "projects/playground/src/styles.scss"
-            ],
+            "styles": ["projects/playground/src/styles.scss"],
             "scripts": []
           },
           "configurations": {
@@ -131,9 +127,7 @@
               "projects/playground/src/favicon.ico",
               "projects/playground/src/assets"
             ],
-            "styles": [
-              "projects/playground/src/styles.scss"
-            ],
+            "styles": ["projects/playground/src/styles.scss"],
             "scripts": []
           }
         },
@@ -145,9 +139,7 @@
               "projects/playground/tsconfig.spec.json",
               "projects/playground/e2e/tsconfig.json"
             ],
-            "exclude": [
-              "**/node_modules/**"
-            ]
+            "exclude": ["**/node_modules/**"]
           }
         },
         "e2e": {
@@ -163,7 +155,8 @@
           }
         }
       }
-    }},
+    }
+  },
   "cli": {
     "analytics": "1fda32b1-7b29-416a-8ab5-4ab9bb640931"
   },
