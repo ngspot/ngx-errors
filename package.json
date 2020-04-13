@@ -13,10 +13,11 @@
     "commit": "git-cz",
     "release:first": "npm run release -- --first-release",
     "build:lib": "ng build ngx-errors --prod",
-    "test:lib": "ng test ngx-errors --code-coverage",
+    "test:lib": "ng test ngx-errors",
+    "test:lib:headless": "cross-env CI=true npm run test:lib",
+    "test:lib:coverage": "npm run test:lib -- --code-coverage",
     "postbuild:lib": "copyfiles README.md logo.png dist/ngx-errors",
-    "release": "cd projects/ngx-errors && standard-version --infile ../../CHANGELOG.md",
-    "test:lib:headless": "cross-env CI=true npm run test:lib"
+    "release": "cd projects/ngx-errors && standard-version --infile ../../CHANGELOG.md"
   },
   "private": true,
   "dependencies": {
