@@ -14,10 +14,10 @@
 
 > Reactive forms validation for pros
 
-I solely missed `ng-messages` directive from AngularJs, so I created this one to use in Angular 2+.
-In contrast to the one from AngularJs, this one requires you to pass the control name to the directive, instead of its errors.
-This allowed me to hook in to the status of control, like its `dirty` state, and display validation messages according to that status.
-A nice side effect of that decision is less boilerplate code.
+I very much missed the `ng-messages` directive from AngularJS, so I created a similar set of directives to use in Angular 2+.
+In contrast to the directives from AngularJS, the directives in this library require passing the control name to the directive, instead of the control's errors.
+This allowed me to hook into the status of control, such as its `dirty` state, and display validation messages according to that status.
+The design of this library promotes less boilerplate code, which keeps your templates clean.
 
 ## Features
 
@@ -46,20 +46,20 @@ A nice side effect of that decision is less boilerplate code.
 
 ## Usage
 
-Import library into your application module:
+Import library into application module:
 
 ```ts
 import { NgxErrorsModule } from '@ngspot/ngx-errors'; // <-- import the module
 
 @NgModule({
   imports: [
-    NgxErrorsModule, // <-- include it in your app module
+    NgxErrorsModule, // <-- include imported module in app module
   ],
 })
 export class MyAppModule {}
 ```
 
-### Use-case with a form:
+### Use case with a form:
 
 ```ts
 @Component({
@@ -85,7 +85,7 @@ export class MyComponent implements OnInit {
 }
 ```
 
-### Use-case with a simple FormControl:
+### Use case with a simple FormControl:
 
 ```ts
 @Component({
@@ -105,7 +105,7 @@ export class MyComponent implements OnInit {
 
 ## Configuration
 
-You configure when to show messages for your whole module by using `.configure()` method:
+Configure when to show messages for whole module by using `.configure()` method:
 
 ```ts
 @NgModule({
@@ -121,7 +121,7 @@ Alternatively, use dependency injection to provide configuration at a component 
 ```ts
 import { ErrorsConfiguration } from '@ngspot/ngx-errors';
 
-const myConfig = { ... }; // <- specify your config
+const myConfig = { ... }; // <- specify config
 
 @Component({
   ...
@@ -132,7 +132,7 @@ const myConfig = { ... }; // <- specify your config
 export class MyComponent { }
 ```
 
-Here's configuration object interface:
+Here's the configuration object interface:
 
 ```ts
 interface IErrorsConfiguration {
@@ -157,7 +157,7 @@ interface IErrorsConfiguration {
 
 ## Styling
 
-Just include something similar to the following in your global css file:
+Include something similar to the following in global CSS file:
 
 ```css
 [ngxerrors] {
@@ -172,17 +172,17 @@ Just include something similar to the following in your global css file:
 1. Develop
 1. Write specs
 1. Run `npm run test:lib`
-1. Run `npm run commit`, and choose fix or feature
+1. Run `npm run commit` and choose fix or feature
 1. Run `npm run release`
 1. Run `npm run build:lib`
-1. Go to the dist directory, and run `npm publish`
+1. Go to the dist directory and run `npm publish`
 
 ### Scripts
 
 - `build:lib` - Builds the library
 - `test:lib` - Runs tests
 - `test:lib:headless` - Runs tests in headless mode with Chrome
-- `release` - Releases a new version. This will bump the library's version, and update the `CHANGE_LOG` file based on the commit message
+- `release` - Releases a new version; this will bump the library's version and update the `CHANGE_LOG` file based on the commit message
 - `release:first` - Creates the first release
 - `commit` - Creates a new commit message based on Angular commit message convention
 - `contributors:add` - Adds a new contributor to the `README` file
