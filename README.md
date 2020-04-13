@@ -171,11 +171,11 @@ Just include something similar to the following in your global css file:
 
 1. Develop
 1. Write specs
-1. Run npm run test:lib,
-1. Run npm run commit, and choose fix or feature
-1. Run npm run release
-1. Run npm run build:lib
-1. Go to the dist directory, and run npm publish
+1. Run `npm run test:lib`
+1. Run `npm run commit`, and choose fix or feature
+1. Run `npm run release`
+1. Run `npm run build:lib`
+1. Go to the dist directory, and run `npm publish`
 
 ### Scripts
 
