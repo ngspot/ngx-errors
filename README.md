@@ -201,12 +201,12 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
 <table>
   <tr>
     <td align="center"><a href="https://github.com/DmitryEfimenko/"><img src="https://avatars0.githubusercontent.com/u/2098175?v=4" width="100px;" alt=""/><br /><sub><b>Dmitry A. Efimenko</b></sub></a><br /><a href="https://github.com/ngspot/ngs-errors/commits?author=DmitryEfimenko" title="Code">💻</a> <a href="#design-DmitryEfimenko" title="Design">🎨</a> <a href="https://github.com/ngspot/ngs-errors/commits?author=DmitryEfimenko" title="Documentation">📖</a> <a href="#ideas-DmitryEfimenko" title="Ideas, Planning, & Feedback">🤔</a></td>
+    <td align="center"><a href="https://github.com/AnaBoca"><img src="https://avatars0.githubusercontent.com/u/17017510?v=4" width="100px;" alt=""/><br /><sub><b>Ana Boca</b></sub></a><br /><a href="https://github.com/ngspot/ngs-errors/commits?author=AnaBoca" title="Documentation">📖</a></td>
   </tr>
 </table>
 
 <!-- markdownlint-enable -->
 <!-- prettier-ignore-end -->
-
 <!-- ALL-CONTRIBUTORS-LIST:END -->
 
 This project follows the [all-contributors](https://github.com/all-contributors/all-contributors) specification. Contributions of any kind welcome!
