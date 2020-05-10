@@ -1,6 +1,11 @@
 <form [formGroup]="form" (submit)="submit()">
   <input type="text" formControlName="firstName" />
 
+  <pre>
+    Dirty: {{ form.controls.firstName.dirty }}
+    Touched: {{ form.controls.firstName.touched }}
+  </pre>
+
   <div ngxErrors="firstName">
     <div ngxError="required">First name is required</div>
   </div>

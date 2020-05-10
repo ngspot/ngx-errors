@@ -200,7 +200,7 @@ describe('ErrorDirective ', () => {
       });
 
       Then(() => {
-        expect(spectator.element).toBeHidden();
+        expect(spectator.element).toBeVisible();
 
         spectator.click('button');
 
@@ -234,7 +234,7 @@ describe('ErrorDirective ', () => {
         Given(() => {
           expect(spectator.element).toBeHidden();
           spectator.typeInElement('', 'input');
-          expect(spectator.element).toBeHidden();
+          expect(spectator.element).toBeVisible();
         });
 
         Then(() => {

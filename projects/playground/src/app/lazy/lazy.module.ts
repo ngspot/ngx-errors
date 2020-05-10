@@ -12,7 +12,8 @@ import { LazyComponent } from './lazy.component';
     LazyRoutingModule,
     ReactiveFormsModule,
     NgxErrorsModule.configure({
-      showErrorsWhenFormSubmitted: true,
+      showErrorsOnlyIfInputDirty: true,
+      showErrorsWhenFormSubmitted: false,
     }),
   ],
 })

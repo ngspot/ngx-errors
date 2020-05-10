@@ -86,8 +86,10 @@ export class ErrorDirective implements AfterViewInit, OnDestroy {
     const canShowBasedOnControlDirty = this.canShowBasedOnControlDirty(control);
 
     const form = this.errorsDirective.parentForm;
-    if (this.config.showErrorsWhenFormSubmitted) {
-      couldShowError = form ? form.submitted : canShowBasedOnControlDirty;
+
+    if (form != null && form.submitted) {
+      couldShowError =
+        this.config.showErrorsWhenFormSubmitted || canShowBasedOnControlDirty;
     } else {
       couldShowError = canShowBasedOnControlDirty;
     }
