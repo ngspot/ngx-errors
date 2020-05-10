@@ -6,11 +6,12 @@ import {
   IErrorsConfiguration,
   ErrorsConfiguration,
 } from './errors-configuration';
+import { RichErrorDirective } from './rich-error.directive';
 
 @NgModule({
   imports: [ReactiveFormsModule],
-  declarations: [ErrorsDirective, ErrorDirective],
-  exports: [ErrorsDirective, ErrorDirective],
+  declarations: [ErrorsDirective, ErrorDirective, RichErrorDirective],
+  exports: [ErrorsDirective, ErrorDirective, RichErrorDirective],
 })
 export class NgxErrorsModule {
   static configure(

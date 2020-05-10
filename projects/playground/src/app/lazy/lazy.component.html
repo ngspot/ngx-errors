@@ -1,15 +1,30 @@
 <form [formGroup]="form" (submit)="submit()">
-  <input type="text" formControlName="firstName" />
+  <input type="text" formControlName="firstName" placeholder="firstName" />
 
   <div ngxErrors="firstName">
     <div ngxError="required">First name is required</div>
   </div>
 
   <div formGroupName="address">
-    <input type="text" formControlName="street" />
+    <input type="text" formControlName="street" placeholder="street" />
 
     <div ngxErrors="street">
       <div ngxError="required">Street name is required</div>
+    </div>
+
+    <input type="text" formControlName="zip" placeholder="zip" />
+
+    <div ngxErrors="zip">
+      <div
+        *ngxRichError="
+          'minlength';
+          let actualLength = actualLength;
+          let requiredLength = requiredLength
+        "
+      >
+        Value should be at least {{ requiredLength }} long; Right now it's
+        {{ actualLength }}
+      </div>
     </div>
   </div>
 

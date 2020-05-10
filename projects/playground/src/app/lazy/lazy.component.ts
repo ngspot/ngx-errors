@@ -14,6 +14,7 @@ export class LazyComponent implements OnInit {
       firstName: ['', Validators.required],
       address: fb.group({
         street: ['', Validators.required],
+        zip: ['', Validators.minLength(5)],
       }),
     });
   }
