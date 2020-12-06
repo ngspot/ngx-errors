@@ -8,13 +8,19 @@ import {
   Optional,
 } from '@angular/core';
 import { AbstractControl } from '@angular/forms';
-import { merge, NEVER, Subject } from 'rxjs';
-import { filter, map, switchMap, takeUntil, tap } from 'rxjs/operators';
-import { ErrorsConfiguration } from './errors-configuration';
+import { merge, NEVER, Observable, Subject } from 'rxjs';
+import {
+  auditTime,
+  filter,
+  map,
+  switchMap,
+  takeUntil,
+  tap,
+} from 'rxjs/operators';
+import { ErrorsConfiguration, ShowErrorWhen } from './errors-configuration';
 import { ErrorsDirective } from './errors.directive';
+import { extractTouchedChanges } from './misc';
 import { NoParentNgxErrorsError, ValueMustBeStringError } from './ngx-errors';
-
-const defaultConfig = new ErrorsConfiguration();
 
 /**
  * Directive to provide a validation error for a specific error name.
@@ -29,14 +35,19 @@ const defaultConfig = new ErrorsConfiguration();
  */
 @Directive({
   selector: '[ngxError]',
+  exportAs: 'ngxError',
 })
 export class ErrorDirective implements AfterViewInit, OnDestroy {
+  private destroy = new Subject();
+
   @HostBinding('hidden')
   hidden = true;
 
   @Input('ngxError') errorName: string;
 
-  private destroy = new Subject();
+  @Input() showWhen: ShowErrorWhen;
+
+  err: any = {};
 
   constructor(
     private cdr: ChangeDetectorRef,
@@ -44,25 +55,36 @@ export class ErrorDirective implements AfterViewInit, OnDestroy {
     // use @Optional so that we can throw a custom error
     @Optional() private errorsDirective: ErrorsDirective,
     @Optional() private config: ErrorsConfiguration
-  ) {
-    this.initConfig();
-  }
+  ) {}
 
   ngAfterViewInit() {
     this.validateDirective();
 
-    const ngSubmit$ =
-      this.config.showErrorsWhenFormSubmitted && this.errorsDirective.parentForm
-        ? this.errorsDirective.parentForm.ngSubmit
-        : NEVER;
+    const ngSubmit$ = this.errorsDirective.parentForm
+      ? this.errorsDirective.parentForm.ngSubmit
+      : NEVER;
+
+    let touchedChanges$: Observable<boolean>;
 
     this.errorsDirective.control$
       .pipe(
         takeUntil(this.destroy),
         filter((c): c is AbstractControl => !!c),
-        tap((control) => this.calcShouldDisplay(control)),
+        tap(() => {
+          this.initConfig();
+        }),
+        tap((control) => {
+          touchedChanges$ = extractTouchedChanges(control);
+          this.calcShouldDisplay(control);
+        }),
         switchMap((control) =>
-          merge(control.valueChanges, ngSubmit$).pipe(
+          merge(
+            control.valueChanges,
+            control.statusChanges,
+            touchedChanges$,
+            ngSubmit$
+          ).pipe(
+            auditTime(0),
             takeUntil(this.destroy),
             map(() => control)
           )
@@ -83,31 +105,52 @@ export class ErrorDirective implements AfterViewInit, OnDestroy {
     // could show error if there is one
     let couldShowError = false;
 
-    const canShowBasedOnControlDirty = this.canShowBasedOnControlDirty(control);
-
     const form = this.errorsDirective.parentForm;
-    if (this.config.showErrorsWhenFormSubmitted) {
-      couldShowError = form ? form.submitted : canShowBasedOnControlDirty;
+
+    if (form != null && form.submitted) {
+      couldShowError = true;
     } else {
-      couldShowError = canShowBasedOnControlDirty;
+      if (
+        this.showWhen === 'touchedAndDirty' &&
+        control.dirty &&
+        control.touched
+      ) {
+        couldShowError = true;
+      }
+
+      if (this.showWhen === 'dirty' && control.dirty) {
+        couldShowError = true;
+      }
+
+      if (this.showWhen === 'touched' && control.touched) {
+        couldShowError = true;
+      }
     }
 
     this.hidden = !(couldShowError && hasError);
+
+    this.err = control.getError(this.errorName) || {};
+
     this.cdr.detectChanges();
   }
 
   private initConfig() {
-    if (!this.config) {
-      this.config = defaultConfig;
+    if (this.showWhen) {
       return;
     }
-    if (this.config.showErrorsOnlyIfInputDirty == null) {
-      this.config.showErrorsOnlyIfInputDirty =
-        defaultConfig.showErrorsOnlyIfInputDirty;
+
+    if (this.errorsDirective.showWhen) {
+      this.showWhen = this.errorsDirective.showWhen;
+      return;
     }
-    if (this.config.showErrorsWhenFormSubmitted == null) {
-      this.config.showErrorsWhenFormSubmitted =
-        defaultConfig.showErrorsWhenFormSubmitted;
+
+    this.showWhen = this.config ? this.config.showErrorsWhenInput : 'touched';
+
+    if (
+      this.showWhen === 'formIsSubmitted' &&
+      !this.errorsDirective.parentForm
+    ) {
+      this.showWhen = 'touched';
     }
   }
 
@@ -119,9 +162,5 @@ export class ErrorDirective implements AfterViewInit, OnDestroy {
     if (typeof this.errorName !== 'string' || this.errorName.trim() === '') {
       throw new ValueMustBeStringError();
     }
-  }
-
-  private canShowBasedOnControlDirty(control: AbstractControl) {
-    return !this.config.showErrorsOnlyIfInputDirty || control.dirty;
   }
 }

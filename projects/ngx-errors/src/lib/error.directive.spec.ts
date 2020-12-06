@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { async } from '@angular/core/testing';
 import {
   FormControl,
   FormGroup,
@@ -10,6 +11,7 @@ import { ErrorDirective } from './error.directive';
 import {
   ErrorsConfiguration,
   IErrorsConfiguration,
+  ShowErrorWhen,
 } from './errors-configuration';
 import { ErrorsDirective } from './errors.directive';
 import { NoParentNgxErrorsError, ValueMustBeStringError } from './ngx-errors';
@@ -18,24 +20,36 @@ import { NoParentNgxErrorsError, ValueMustBeStringError } from './ngx-errors';
 class TestHostComponent {
   validInitialVal = new FormControl('val', Validators.required);
   invalidInitialVal = new FormControl('', Validators.required);
+
   form = new FormGroup({
-    address: new FormGroup({
-      street: new FormControl('', Validators.required),
-    }),
+    validInitialVal: new FormControl('val', Validators.required),
+    invalidInitialVal: new FormControl(3, Validators.min(10)),
   });
 
   submit() {}
 }
 
-describe('ErrorDirective without config', () => {
-  let spectator: SpectatorDirective<ErrorDirective>;
+describe('ErrorDirective', () => {
+  const initialConfig: IErrorsConfiguration = {
+    showErrorsWhenInput: 'touched',
+  };
+
   const createDirective = createDirectiveFactory({
     directive: ErrorDirective,
     declarations: [ErrorsDirective],
+    imports: [ReactiveFormsModule],
+    providers: [{ provide: ErrorsConfiguration, useValue: initialConfig }],
     host: TestHostComponent,
   });
 
-  function createDirectiveWithConfig(config: IErrorsConfiguration) {
+  let template: string;
+  let spectator: SpectatorDirective<ErrorDirective, TestHostComponent>;
+  let showWhen: ShowErrorWhen;
+
+  Given(() => (showWhen = undefined as any));
+
+  function createDirectiveWithConfig(showErrorsWhenInput: ShowErrorWhen) {
+    const config: IErrorsConfiguration = { showErrorsWhenInput };
     spectator = createDirective(template, {
       providers: [
         {
@@ -46,48 +60,31 @@ describe('ErrorDirective without config', () => {
     });
   }
 
-  const defaultConfig = new ErrorsConfiguration();
+  function ThenErrorShouldBeVisible() {
+    Then('Error should be visible', () =>
+      expect(spectator.element).toBeVisible()
+    );
+  }
 
-  const template = `
-    <div [ngxErrors]="validInitialVal">
-      <div ngxError="req"></div>
-    </div>`;
+  function ThenErrorShouldBeHidden() {
+    Then('Error should be hidden', () =>
+      expect(spectator.element).toBeHidden()
+    );
+  }
 
-  it('should use config defaults if no config is provided', () => {
-    spectator = createDirective(template);
-    expect(spectator.directive['config']).toEqual(defaultConfig);
-  });
-
-  it('should correctly set default for showErrorsWhenFormSubmitted', () => {
-    createDirectiveWithConfig({ showErrorsOnlyIfInputDirty: false });
-
-    const actual = spectator.directive['config'];
-    expect(actual.showErrorsOnlyIfInputDirty).toBe(false);
-    expect(actual.showErrorsWhenFormSubmitted).toBe(false);
-  });
-
-  it('should correctly set default for showErrorsOnlyIfInputDirty', () => {
-    createDirectiveWithConfig({ showErrorsWhenFormSubmitted: true });
-
-    const actual = spectator.directive['config'];
-    expect(actual.showErrorsOnlyIfInputDirty).toBe(true);
-    expect(actual.showErrorsWhenFormSubmitted).toBe(true);
-  });
-});
-
-describe('ErrorDirective ', () => {
-  let spectator: SpectatorDirective<ErrorDirective, TestHostComponent>;
-  const initialConfig: IErrorsConfiguration = {
-    showErrorsOnlyIfInputDirty: false,
-    showErrorsWhenFormSubmitted: false,
-  };
-  const createDirective = createDirectiveFactory({
-    directive: ErrorDirective,
-    declarations: [ErrorsDirective],
-    imports: [ReactiveFormsModule],
-    providers: [{ provide: ErrorsConfiguration, useValue: initialConfig }],
-    host: TestHostComponent,
-  });
+  function ExpectErrorVisibilityForStates(opts: {
+    expectedVisibility: boolean;
+    forStates: ShowErrorWhen[];
+  }) {
+    opts.forStates.forEach((givenShowWhen) => {
+      describe(`GIVEN: showWhen: ${givenShowWhen}`, () => {
+        Given(() => (showWhen = givenShowWhen));
+        opts.expectedVisibility
+          ? ThenErrorShouldBeVisible()
+          : ThenErrorShouldBeHidden();
+      });
+    });
+  }
 
   it('should throw if no parent ngxErrors is found', () => {
     expect(() => {
@@ -95,152 +92,269 @@ describe('ErrorDirective ', () => {
     }).toThrow(new NoParentNgxErrorsError());
   });
 
-  describe('GIVEN: with parent ngxErrors', () => {
-    Then('should throw if errorName is not provided', () => {
-      expect(() => {
-        createDirective(`
+  it('should throw if errorName is not provided', () => {
+    expect(() => {
+      createDirective(`
         <div [ngxErrors]="invalidInitialVal">
           <div ngxError>Required</div>
         </div>`);
-      }).toThrow(new ValueMustBeStringError());
+    }).toThrow(new ValueMustBeStringError());
+  });
+
+  describe('PROP: showWhen', () => {
+    let actual: ShowErrorWhen;
+
+    When(() => {
+      createDirectiveWithConfig(showWhen);
+      actual = spectator.directive.showWhen;
     });
 
-    describe('GIVEN: valid initial value', () => {
+    describe('GIVEN: There is a parent form', () => {
+      describe('GIVEN: there is no override at the directive level', () => {
+        Given(() => {
+          template = `
+            <form [formGroup]="form">
+              <div [ngxErrors]="'invalidInitialVal'">
+                <div ngxError="req"></div>
+              </div>
+            </form>`;
+        });
+
+        describe('GIVEN: config.showWhen = "touched"', () => {
+          Given(() => (showWhen = 'touched'));
+          Then('should be touched', () => expect('touched').toBe(actual));
+        });
+
+        describe('GIVEN: config.showWhen = "dirty"', () => {
+          Given(() => (showWhen = 'dirty'));
+          Then('should be dirty', () => expect('dirty').toBe(actual));
+        });
+
+        describe('GIVEN: config.showWhen = "touchedAndDirty"', () => {
+          Given(() => (showWhen = 'touchedAndDirty'));
+          Then('should be touchedAndDirty', () =>
+            expect('touchedAndDirty').toBe(actual)
+          );
+        });
+
+        describe('GIVEN: config.showWhen = "formIsSubmitted"', () => {
+          Given(() => (showWhen = 'formIsSubmitted'));
+          Then('should be formIsSubmitted', () =>
+            expect('formIsSubmitted').toBe(actual)
+          );
+        });
+      });
+
+      describe('GIVEN: there is an override at the ngxErrors level', () => {
+        Given(() => {
+          showWhen = 'formIsSubmitted';
+          template = `
+            <form [formGroup]="form">
+              <div ngxErrors="invalidInitialVal" showWhen="touched">
+                <div ngxError="req"></div>
+              </div>
+            </form>`;
+        });
+
+        Then('should be formIsSubmitted', () => expect('touched').toBe(actual));
+      });
+
+      describe('GIVEN: there is an override at the ngxError level', () => {
+        Given(() => {
+          showWhen = 'formIsSubmitted';
+          template = `
+            <form [formGroup]="form">
+              <div ngxErrors="invalidInitialVal">
+                <div ngxError="req" showWhen="touched"></div>
+              </div>
+            </form>`;
+        });
+
+        Then('should be formIsSubmitted', () => expect('touched').toBe(actual));
+      });
+    });
+
+    describe('GIVEN: There is no parent form', () => {
       Given(() => {
-        const template = `
+        template = `
           <div [ngxErrors]="validInitialVal">
-            <div ngxError="required">Required</div>
-          </div>
-        `;
-        spectator = createDirective(template);
+            <div ngxError="req"></div>
+          </div>`;
       });
 
-      Then('should initially be hidden', () => {
-        expect(spectator.element).toBeHidden();
-      });
-
-      describe('GIVEN: validity change', () => {
-        When(() => {
-          spectator.hostComponent.validInitialVal.setValue('');
-        });
-
-        Then('should be visible', () => {
-          expect(spectator.element).toBeVisible();
-        });
-      });
-    });
-
-    describe('GIVEN: invalid initial value', () => {
-      Given(() => {
-        const template = `
-          <div [ngxErrors]="invalidInitialVal">
-            <div ngxError="required">Required</div>
-          </div>
-        `;
-        spectator = createDirective(template);
-      });
-
-      Then('should initially be visible', () => {
-        expect(spectator.element).toBeVisible();
-      });
-
-      describe('GIVEN: validity change', () => {
-        When(() => {
-          spectator.hostComponent.invalidInitialVal.setValue('val');
-        });
-
-        Then('should be hidden', () => {
-          expect(spectator.element).toBeHidden();
-        });
+      describe('GIVEN: config.showWhen = "formIsSubmitted"', () => {
+        Given(() => (showWhen = 'formIsSubmitted'));
+        Then('should be overridden to touched', () =>
+          expect('touched').toBe(actual)
+        );
       });
     });
   });
 
-  describe('GIVEN: complex example', () => {
-    function createDirectiveWithConfig(config: IErrorsConfiguration) {
-      const template = `
-        <form [formGroup]="form" (ngSubmit)="submit()">
-          <div formGroupName="address">
-            <input formControlName="street" type="text" />
-            <div ngxErrors="street">
-              <div ngxError="required">Required</div>
-            </div>
-            <button type="submit">Submit</button>
+  describe('TEST: initial visibility', () => {
+    let testControl: 'validInitialVal' | 'invalidInitialVal';
+
+    When(() => {
+      template = `
+      <form [formGroup]="form">
+        <div ngxErrors="${testControl}">
+          <div ngxError="req"></div>
+        </div>
+      </form>`;
+      createDirectiveWithConfig(showWhen);
+    });
+
+    describe('GIVEN: testControl is "validInitialVal"', () => {
+      Given(() => (testControl = 'validInitialVal'));
+      ExpectErrorVisibilityForStates({
+        expectedVisibility: false,
+        forStates: ['dirty', 'touched', 'touchedAndDirty', 'formIsSubmitted'],
+      });
+    });
+
+    describe('GIVEN: testControl is "invalidInitialVal"', () => {
+      Given(() => (testControl = 'invalidInitialVal'));
+      ExpectErrorVisibilityForStates({
+        expectedVisibility: false,
+        forStates: ['dirty', 'touched', 'touchedAndDirty', 'formIsSubmitted'],
+      });
+    });
+  });
+
+  describe('TEST: submitting a form should display an error', () => {
+    Given(() => {
+      template = `
+      <form [formGroup]="form" (ngSubmit)="submit()">
+        <input type="number" formControlName="invalidInitialVal" />
+
+        <div ngxErrors="invalidInitialVal">
+          <div ngxError="min"></div>
+        </div>
+
+        <button type="submit"></button>
+      </form>`;
+    });
+
+    When(
+      async(() => {
+        createDirectiveWithConfig(showWhen);
+        spectator.click('button');
+      })
+    );
+
+    ExpectErrorVisibilityForStates({
+      expectedVisibility: true,
+      forStates: ['dirty', 'touched', 'touchedAndDirty', 'formIsSubmitted'],
+    });
+  });
+
+  describe('TEST: visibility of error when interacting with an input', () => {
+    Given(() => {
+      template = `
+      <form [formGroup]="form" (ngSubmit)="submit()">
+        <input type="text" formControlName="invalidInitialVal" />
+
+        <div ngxErrors="invalidInitialVal">
+          <div ngxError="min">min 10</div>
+        </div>
+      </form>`;
+    });
+
+    describe('WHEN: touch an input', () => {
+      When(
+        async(() => {
+          createDirectiveWithConfig(showWhen);
+          spectator.focus('input');
+          spectator.blur('input');
+        })
+      );
+
+      ExpectErrorVisibilityForStates({
+        expectedVisibility: true,
+        forStates: ['touched'],
+      });
+
+      ExpectErrorVisibilityForStates({
+        expectedVisibility: false,
+        forStates: ['dirty', 'touchedAndDirty', 'formIsSubmitted'],
+      });
+    });
+
+    describe('WHEN: type in the input', () => {
+      When(
+        async(() => {
+          createDirectiveWithConfig(showWhen);
+          spectator.typeInElement('5', 'input');
+        })
+      );
+
+      ExpectErrorVisibilityForStates({
+        expectedVisibility: true,
+        forStates: ['dirty'],
+      });
+
+      ExpectErrorVisibilityForStates({
+        expectedVisibility: false,
+        forStates: ['touched', 'touchedAndDirty', 'formIsSubmitted'],
+      });
+    });
+
+    describe('WHEN: type in the input and focus out (touch)', () => {
+      When(
+        async(() => {
+          createDirectiveWithConfig(showWhen);
+          spectator.typeInElement('5', 'input');
+          spectator.blur('input');
+        })
+      );
+
+      ExpectErrorVisibilityForStates({
+        expectedVisibility: true,
+        forStates: ['dirty', 'touched', 'touchedAndDirty'],
+      });
+
+      ExpectErrorVisibilityForStates({
+        expectedVisibility: false,
+        forStates: ['formIsSubmitted'],
+      });
+    });
+  });
+
+  describe('TEST: getting error details', () => {
+    // Number should be greater than {{minError.ctx.min}}. You've typed {{minError.ctx}}.
+    Given(() => {
+      template = `
+      <form [formGroup]="form" (ngSubmit)="submit()">
+        <input type="number" formControlName="invalidInitialVal" />
+
+        <div ngxErrors="invalidInitialVal">
+          <div ngxError="min" #min="ngxError">
+            Number should be greater than {{min.err.min}}. You've typed {{min.err.actual}}.
           </div>
-        </form>
-      `;
-      spectator = createDirective(template, {
-        providers: [{ provide: ErrorsConfiguration, useValue: config }],
-      });
-    }
+        </div>
 
-    describe('GIVEN: config.showErrorsOnlyIfInputDirty = true', () => {
-      Given(() => {
-        createDirectiveWithConfig({
-          showErrorsOnlyIfInputDirty: true,
-          showErrorsWhenFormSubmitted: false,
-        });
-      });
+        <div id="error-outside" *ngIf="min.err.min">min: {{min.err.min}}</div>
 
-      Then(() => {
-        expect(spectator.element).toBeHidden();
-
-        spectator.typeInElement('', 'input');
-
-        expect(spectator.element).toBeVisible();
-      });
+        <button type="submit"></button>
+      </form>`;
     });
 
-    describe('GIVEN: config.showErrorsWhenFormSubmitted = true', () => {
-      Given(() => {
-        createDirectiveWithConfig({
-          showErrorsOnlyIfInputDirty: false,
-          showErrorsWhenFormSubmitted: true,
-        });
-      });
-
-      Then(() => {
-        expect(spectator.element).toBeHidden();
-
+    When(
+      async(() => {
+        createDirectiveWithConfig(showWhen);
         spectator.click('button');
+      })
+    );
 
-        expect(spectator.element).toBeVisible();
-      });
-    });
+    Then(
+      'You can access error details and can use them outside of ngxErrors',
+      () => {
+        expect(spectator.element).toContainText(
+          "Number should be greater than 10. You've typed 3."
+        );
 
-    describe('GIVEN: config.props are true', () => {
-      Given(() => {
-        createDirectiveWithConfig({
-          showErrorsOnlyIfInputDirty: true,
-          showErrorsWhenFormSubmitted: true,
-        });
-      });
-
-      When(() => {
-        spectator.click('button');
-      });
-
-      describe('GIVEN: controls stays clean before form is submitted', () => {
-        Given(() => {
-          expect(spectator.element).toBeHidden();
-        });
-
-        Then(() => {
-          expect(spectator.element).toBeVisible();
-        });
-      });
-
-      describe('GIVEN: control gets dirty before form is submitted', () => {
-        Given(() => {
-          expect(spectator.element).toBeHidden();
-          spectator.typeInElement('', 'input');
-          expect(spectator.element).toBeHidden();
-        });
-
-        Then(() => {
-          expect(spectator.element).toBeVisible();
-        });
-      });
-    });
+        expect(spectator.query('#error-outside')).toContainText('min: 10');
+      }
+    );
   });
 });

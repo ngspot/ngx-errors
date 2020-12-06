@@ -1,11 +1,11 @@
-import { NgModule, ModuleWithProviders } from '@angular/core';
+import { ModuleWithProviders, NgModule } from '@angular/core';
 import { ReactiveFormsModule } from '@angular/forms';
-import { ErrorsDirective } from './errors.directive';
 import { ErrorDirective } from './error.directive';
 import {
-  IErrorsConfiguration,
   ErrorsConfiguration,
+  IErrorsConfiguration,
 } from './errors-configuration';
+import { ErrorsDirective } from './errors.directive';
 
 @NgModule({
   imports: [ReactiveFormsModule],
@@ -14,7 +14,7 @@ import {
 })
 export class NgxErrorsModule {
   static configure(
-    config: IErrorsConfiguration
+    config?: IErrorsConfiguration
   ): ModuleWithProviders<NgxErrorsModule> {
     return {
       ngModule: NgxErrorsModule,

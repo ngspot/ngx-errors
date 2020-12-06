@@ -14,6 +14,7 @@ import {
   FormGroupName,
 } from '@angular/forms';
 import { BehaviorSubject } from 'rxjs';
+import { ShowErrorWhen } from './errors-configuration';
 import {
   ControlInstanceError,
   ControlNotFoundError,
@@ -61,11 +62,14 @@ import {
  */
 @Directive({
   selector: '[ngxErrors]',
+  exportAs: 'ngxErrors',
 })
 export class ErrorsDirective implements AfterViewInit {
   control$ = new BehaviorSubject<AbstractControl | undefined>(undefined);
 
   @Input('ngxErrors') _control: AbstractControl | string;
+
+  @Input() showWhen: ShowErrorWhen;
 
   constructor(
     @Optional() @SkipSelf() public parentForm?: FormGroupDirective,
