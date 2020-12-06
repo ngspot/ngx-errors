@@ -1,23 +1,27 @@
+import { Injectable } from '@angular/core';
+
+export type ShowErrorWhen =
+  | 'touched'
+  | 'dirty'
+  | 'touchedAndDirty'
+  | 'formIsSubmitted';
+
 export interface IErrorsConfiguration {
   /**
-   * Configure errors to show only when the corresponding input is dirty.
+   * Configures when to display an error for an invalid control. Available options are:
    *
-   * Default is `true`.
-   */
-  showErrorsOnlyIfInputDirty?: boolean;
-
-  /**
-   * Configure errors to show only when form is submitted.
-   * Upon form submission shows errors even if `showErrorsOnlyIfInputDirty = true`
-   * and some of the inputs aren't dirty.
-   * Takes effect only when ngxErrors directive is a child of a form.
+   * `'touched'` - *[default]* shows an error when control is marked as touched. For example, user focused on the input and clicked away or tabbed through the input.
    *
-   * Default is `false`.
+   * `'dirty'` - shows an error when control is marked as dirty. For example, when user has typed something in.
+   *
+   * `'touchedAndDirty'` - shows an error when control is marked as both - touched and dirty.
+   *
+   * `'formIsSubmitted'` - shows an error when parent form was submitted.
    */
-  showErrorsWhenFormSubmitted?: boolean;
+  showErrorsWhenInput: ShowErrorWhen;
 }
 
+@Injectable()
 export class ErrorsConfiguration implements IErrorsConfiguration {
-  showErrorsOnlyIfInputDirty = true;
-  showErrorsWhenFormSubmitted = false;
+  showErrorsWhenInput = 'touched' as ShowErrorWhen;
 }

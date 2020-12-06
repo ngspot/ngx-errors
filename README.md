@@ -28,11 +28,25 @@ The design of this library promotes less boilerplate code, which keeps your temp
 
 ## Table of Contents
 
+- [How it works](#how_it_works)
 - [Installation](#installation)
 - [Usage](#usage)
 - [Advanced configuration](#configuration)
+- [Handling form submission](#handling_form_submission)
+- [Getting error details](#getting_error_details)
 - [Styling](#styling)
 - [Development](#development)
+
+## How it works
+
+There are a few rules that the library follows to determine when to display errors:
+
+- Errors will be shown no matter what configuration you're using after form is submitted.
+- If no configuration is provided, the errors will be shown when control is `touched`.
+  - This is chosen due to the UX guidelines. Read (1) [How to Report Errors in Forms](https://www.nngroup.com/articles/errors-forms-design-guidelines/) and (2) [Designing More Efficient Forms](https://uxplanet.org/designing-more-efficient-forms-assistance-and-validation-f26a5241199d) for more info.
+- If you configured errors to be shown when `formIsSubmitted`, but dealing with a control that does not have a parent _form_, the config for this control will fall back to `touched`.
+
+For more info about this see [Advanced configuration](#configuration).
 
 ## Installation
 
@@ -119,9 +133,9 @@ export class MyAppModule {}
 Alternatively, use dependency injection to provide configuration at a component level:
 
 ```ts
-import { ErrorsConfiguration } from '@ngspot/ngx-errors';
+import { ErrorsConfiguration, IErrorsConfiguration } from '@ngspot/ngx-errors';
 
-const myConfig = { ... }; // <- specify config
+const myConfig: IErrorsConfiguration = { ... }; // <- specify config
 
 @Component({
   ...
@@ -135,25 +149,82 @@ export class MyComponent { }
 Here's the configuration object interface:
 
 ```ts
-interface IErrorsConfiguration {
+export interface IErrorsConfiguration {
   /**
-   * Configure errors to show only when the corresponding input is dirty.
+   * Configures when to display an error for an invalid control. Available options are:
    *
-   * Default is `true`.
-   */
-  showErrorsOnlyIfInputDirty?: boolean;
-
-  /**
-   * Configure errors to show only when form is submitted.
-   * Upon form submission shows errors even if `showErrorsOnlyIfInputDirty = true`
-   * and some of the inputs aren't dirty.
-   * Takes effect only when ngxErrors directive is a child of a form.
+   * `'touched'` - *[default]* shows an error when control is marked as touched. For example, user focused on the input and clicked away or tabbed through the input.
    *
-   * Default is `false`.
+   * `'dirty'` - shows an error when control is marked as dirty. For example, when user has typed something in.
+   *
+   * `'touchedAndDirty'` - shows an error when control is marked as both - touched and dirty.
+   *
+   * `'formIsSubmitted'` - shows an error when parent form was submitted.
    */
-  showErrorsWhenFormSubmitted?: boolean;
+  showErrorsWhenInput: ShowErrorWhen;
 }
+
+export type ShowErrorWhen =
+  | 'touched'
+  | 'dirty'
+  | 'touchedAndDirty'
+  | 'formIsSubmitted';
 ```
+
+### Overriding global config
+
+You can override the configuration specified at the module level by using `[showWhen]` input on `[ngxErrors]` and on `[ngxError]` directives:
+
+```html
+<div ngxErrors="control" showWhen="touchedAndDirty">
+  <div ngxError="required" showWhen="dirty">
+    This will be shown when control is dirty
+  </div>
+
+  <div ngxError="min">
+    This will be shown when control is touched and dirty
+  </div>
+</div>
+```
+
+## Handling form submission
+
+Often there's a requirement to submit a form when user presses _Enter_. Under the hood ngxError relies on form submit event to display errors. That is why it's important to trigger form submission properly rather than binding `(keyup.enter)` event to the method in your component class directly. Here's how to do that:
+
+```html
+<form
+  [formGroup]="form"
+  (ngSubmit)="yourMethod()"
+  (keyup.enter)="submitBtn.click()"
+>
+  ...
+
+  <button #submitBtn>Submit</button>
+</form>
+```
+
+## Getting error details
+
+Each control error in Angular may contain additional details. For example, here's what `min` error looks like:
+
+```ts
+const control = new FormControl(3, Validators.min(10));
+const error = control.getError('min');
+console.log(error); // prints: { min: 10, actual: 3 }
+```
+
+You can easily get access to these details in the template:
+
+```html
+<div ngxErrors="control">
+  <div ngxError="min" #myMin="ngxError">
+    Number should be greater than {{myMin.err.min}}. You've typed
+    {{myMin.err.actual}}.
+  </div>
+</div>
+```
+
+In the example above we're assigning a variable `myMin` (can be anything you want) to the directive `ngxError`. Using this variable we can access the context of the directive. The directive has property `err` that contains all the error details.
 
 ## Styling
 
@@ -207,6 +278,7 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
 
 <!-- markdownlint-enable -->
 <!-- prettier-ignore-end -->
+
 <!-- ALL-CONTRIBUTORS-LIST:END -->
 
 This project follows the [all-contributors](https://github.com/all-contributors/all-contributors) specification. Contributions of any kind welcome!
