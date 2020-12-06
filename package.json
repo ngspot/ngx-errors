@@ -1,6 +1,7 @@
 {
   "name": "@ngspot/ngx-errors-package",
   "version": "0.0.0",
+  "description": "Handle error messages in Angular forms with ease",
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
@@ -87,5 +88,6 @@
     "*.{js,json,css,scss,ts,html,component.html}": [
       "prettier --write"
     ]
-  }
+  },
+  "license": "MIT"
 }
