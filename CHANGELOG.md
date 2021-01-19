@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## 2.0.1 (2021-01-19)
+
+
+### Features
+
+* 🎸 dependentValidator ([b49b82f](https://github.com/ngspot/ngx-errors/commit/b49b82f9cf75b718288c72f190fa2a09ca1469dc))
+
+
 ## 2.0.0 (2020-12-06)
 
 ### Features
