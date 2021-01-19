@@ -7,3 +7,5 @@ export * from './lib/errors-configuration';
 export * from './lib/errors.directive';
 export * from './lib/errors.module';
 export * from './lib/ngx-errors';
+export * from './lib/validators';
+export * from './lib/misc';

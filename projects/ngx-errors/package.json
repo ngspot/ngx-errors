@@ -1,9 +1,9 @@
 {
   "name": "@ngspot/ngx-errors",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "description": "Handle error messages in Angular forms with ease",
   "peerDependencies": {
-    "@angular/core": "^9.0.0",
+    "@angular/core": ">= 9.0.0",
     "tslib": "^1.10.0"
   },
   "author": {

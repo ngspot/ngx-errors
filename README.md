@@ -35,6 +35,7 @@ The design of this library promotes less boilerplate code, which keeps your temp
 - [Handling form submission](#handling_form_submission)
 - [Getting error details](#getting_error_details)
 - [Styling](#styling)
+- [Miscellaneous](#miscellaneous)
 - [Development](#development)
 
 ## How it works
@@ -234,6 +235,64 @@ Include something similar to the following in global CSS file:
 [ngxerrors] {
   color: red;
 }
+```
+
+## Miscellaneous
+
+ngx-errors library provides a couple of misc function that ease your work with forms.
+
+### **dependentValidator**
+Makes it easy to trigger validation on the control, that depends on a value of a different control
+
+Example with using `FormBuilder`:
+```ts
+import { dependentValidator } from '@ngspot/ngx-errors';
+
+export class LazyComponent {
+  constructor(fb: FormBuilder) {
+    this.form = fb.group({
+      password: ['', Validators.required],
+      confirmPassword: ['', dependentValidator<string>({
+        watchControl: f => f!.get('password')!,
+        validator: (passwordValue) => isEqualToValidator(passwordValue)
+      })],
+    });
+  }
+}
+
+function isEqualToValidator<T>(compareVal: T): ValidatorFn {
+  return function(control: AbstractControl): ValidationErrors | null {
+    return control.value === compareVal
+      ? null
+      : { match: { expected: compareVal, actual: control.value } };
+  }
+}
+```
+
+The `dependentValidator` may also take `condition`. If provided, it needs to return true for the validator to be used.
+
+```ts
+const controlA = new FormControl('');
+const controlB = new FormControl('', dependentValidator<string>({
+  watchControl: () => controlA,
+  validator: () => Validators.required,
+  condition: (val) => val === 'fire'
+}));
+```
+In the example above, the `controlB` will only be required when `controlA` value is `'fire'`
+
+### **extractTouchedChanges**
+As of today, the FormControl does not provide a way to subscribe to the changes of `touched` status. This function lets you do just that:
+
+```ts
+* const touchedChanged$ = extractTouchedChanges(formControl);
+```
+
+### **markDescendantsAsDirty**
+As of today, the FormControl does not provide a way to mark the control and all its children as `dirty`. This function lets you do just that:
+
+```ts
+markDescendantsAsDirty(formControl);
 ```
 
 ## Development

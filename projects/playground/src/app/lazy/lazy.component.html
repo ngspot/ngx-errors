@@ -1,5 +1,8 @@
 <form [formGroup]="form">
-  <input type="text" formControlName="firstName" />
+  <label>
+    First Name
+    <input type="text" formControlName="firstName" />
+  </label>
 
   <pre>
     Dirty: {{ form.controls.firstName.dirty }}
@@ -11,7 +14,12 @@
   </div>
 
   <div formGroupName="address">
-    <input type="text" formControlName="street" />
+    <label>
+      Street
+      <input type="text" formControlName="street" />
+    </label>
+
+    <pre>{{ form.get('address.street')?.errors | json }}</pre>
 
     <div ngxErrors="street">
       <div ngxError="required">Street name is required</div>

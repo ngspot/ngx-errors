@@ -1,4 +1,5 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { ReactiveFormsModule } from '@angular/forms';
 
 import { LazyComponent } from './lazy.component';
 
@@ -8,6 +9,7 @@ describe('LazyComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
+      imports: [ReactiveFormsModule],
       declarations: [LazyComponent],
     }).compileComponents();
   }));

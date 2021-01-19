@@ -1,4 +1,4 @@
-import { AbstractControl } from '@angular/forms';
+import { AbstractControl, FormArray, FormGroup } from '@angular/forms';
 import { Observable, Subject } from 'rxjs';
 
 /**
@@ -48,3 +48,31 @@ export const extractTouchedChanges = (
 
   return touchedChanges$.asObservable();
 };
+
+/**
+ * Marks the provided control as well as all of its children as dirty
+ * @param options to be passed into control.markAsDirty() call
+ */
+export function markDescendantsAsDirty(
+  control: AbstractControl,
+  options?: {
+    onlySelf?: boolean;
+    emitEvent?: boolean;
+  }
+) {
+  control.markAsDirty(options);
+
+  if (control instanceof FormGroup || control instanceof FormArray) {
+    let controls = Object.keys(control.controls).map(
+      (controlName) => control.get(controlName)!
+    );
+
+    controls.forEach((control) => {
+      control.markAsDirty(options);
+
+      if ((control as FormGroup | FormArray).controls) {
+        markDescendantsAsDirty(control, options);
+      }
+    });
+  }
+}
