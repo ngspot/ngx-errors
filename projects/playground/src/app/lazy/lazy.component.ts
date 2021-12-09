@@ -26,7 +26,11 @@ export class LazyComponent implements OnInit {
     });
   }
 
-  ngOnInit() {}
+  ngOnInit() {
+    setTimeout(() => {
+      this.form.markAllAsTouched();
+    }, 3000);
+  }
 
   submit() {
     console.log('submit');

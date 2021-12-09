@@ -8,15 +8,8 @@ import {
   Optional,
 } from '@angular/core';
 import { AbstractControl } from '@angular/forms';
-import { merge, NEVER, Observable, Subject } from 'rxjs';
-import {
-  auditTime,
-  filter,
-  map,
-  switchMap,
-  takeUntil,
-  tap,
-} from 'rxjs/operators';
+import { merge, NEVER, Observable, of, Subscription, timer } from 'rxjs';
+import { auditTime, filter, first, map, switchMap, tap } from 'rxjs/operators';
 import { ErrorsConfiguration, ShowErrorWhen } from './errors-configuration';
 import { ErrorsDirective } from './errors.directive';
 import { extractTouchedChanges } from './misc';
@@ -38,7 +31,7 @@ import { NoParentNgxErrorsError, ValueMustBeStringError } from './ngx-errors';
   exportAs: 'ngxError',
 })
 export class ErrorDirective implements AfterViewInit, OnDestroy {
-  private destroy = new Subject();
+  private subs = new Subscription();
 
   @HostBinding('hidden')
   hidden = true;
@@ -66,9 +59,8 @@ export class ErrorDirective implements AfterViewInit, OnDestroy {
 
     let touchedChanges$: Observable<boolean>;
 
-    this.errorsDirective.control$
+    const sub = this.errorsDirective.control$
       .pipe(
-        takeUntil(this.destroy),
         filter((c): c is AbstractControl => !!c),
         tap(() => {
           this.initConfig();
@@ -77,26 +69,41 @@ export class ErrorDirective implements AfterViewInit, OnDestroy {
           touchedChanges$ = extractTouchedChanges(control);
           this.calcShouldDisplay(control);
         }),
-        switchMap((control) =>
-          merge(
+        switchMap((control) => {
+          // https://github.com/angular/angular/issues/41519
+          // control.statusChanges do not emit when there's async validator
+          // ugly workaround:
+          let asyncBugWorkaround$: Observable<any> = NEVER;
+          if (control.asyncValidator && control.status === 'PENDING') {
+            asyncBugWorkaround$ = timer(0, 50).pipe(
+              switchMap(() => of(control.status)),
+              filter((x) => x !== 'PENDING'),
+              first()
+            );
+          }
+
+          return merge(
             control.valueChanges,
             control.statusChanges,
             touchedChanges$,
-            ngSubmit$
+            ngSubmit$,
+            asyncBugWorkaround$
           ).pipe(
             auditTime(0),
-            takeUntil(this.destroy),
             map(() => control)
-          )
-        ),
-        tap((control) => this.calcShouldDisplay(control))
+          );
+        }),
+        tap((control) => {
+          this.calcShouldDisplay(control);
+        })
       )
       .subscribe();
+
+    this.subs.add(sub);
   }
 
   ngOnDestroy() {
-    this.destroy.next();
-    this.destroy.complete();
+    this.subs.unsubscribe();
   }
 
   private calcShouldDisplay(control: AbstractControl) {
@@ -144,7 +151,7 @@ export class ErrorDirective implements AfterViewInit, OnDestroy {
       return;
     }
 
-    this.showWhen = this.config ? this.config.showErrorsWhenInput : 'touched';
+    this.showWhen = this.config?.showErrorsWhenInput ?? 'touched';
 
     if (
       this.showWhen === 'formIsSubmitted' &&

@@ -1,12 +1,15 @@
 import { Component } from '@angular/core';
 import { async } from '@angular/core/testing';
 import {
+  AbstractControl,
+  AsyncValidatorFn,
   FormControl,
   FormGroup,
   ReactiveFormsModule,
   Validators,
 } from '@angular/forms';
 import { createDirectiveFactory, SpectatorDirective } from '@ngneat/spectator';
+
 import { ErrorDirective } from './error.directive';
 import {
   ErrorsConfiguration,
@@ -16,6 +19,16 @@ import {
 import { ErrorsDirective } from './errors.directive';
 import { NoParentNgxErrorsError, ValueMustBeStringError } from './ngx-errors';
 
+const myAsyncValidator: AsyncValidatorFn = (c: AbstractControl) => {
+  return new Promise((resolve) => {
+    setTimeout(() => {
+      if (c.value != '123') {
+        resolve({ isNot123: true });
+      } else resolve(null);
+    }, 50);
+  });
+};
+
 @Component({})
 class TestHostComponent {
   validInitialVal = new FormControl('val', Validators.required);
@@ -24,6 +37,9 @@ class TestHostComponent {
   form = new FormGroup({
     validInitialVal: new FormControl('val', Validators.required),
     invalidInitialVal: new FormControl(3, Validators.min(10)),
+    withAsyncValidator: new FormControl('', {
+      asyncValidators: myAsyncValidator,
+    }),
   });
 
   submit() {}
@@ -192,7 +208,10 @@ describe('ErrorDirective', () => {
   });
 
   describe('TEST: initial visibility', () => {
-    let testControl: 'validInitialVal' | 'invalidInitialVal';
+    let testControl:
+      | 'validInitialVal'
+      | 'invalidInitialVal'
+      | 'withAsyncValidator';
 
     When(() => {
       template = `
@@ -217,6 +236,37 @@ describe('ErrorDirective', () => {
       ExpectErrorVisibilityForStates({
         expectedVisibility: false,
         forStates: ['dirty', 'touched', 'touchedAndDirty', 'formIsSubmitted'],
+      });
+    });
+
+    describe('GIVEN: testControl is "withAsyncValidator"', () => {
+      describe('initial', () => {
+        Given(() => (testControl = 'withAsyncValidator'));
+        ExpectErrorVisibilityForStates({
+          expectedVisibility: false,
+          forStates: ['dirty'],
+        });
+      });
+
+      describe('after async validator was done', () => {
+        it('should behave...', async () => {
+          testControl = 'withAsyncValidator';
+
+          template = `
+          <form [formGroup]="form">
+            <div ngxErrors="${testControl}">
+              <div ngxError="isNot123"></div>
+            </div>
+          </form>`;
+          createDirectiveWithConfig(showWhen);
+
+          const c = spectator.hostComponent.form.get(testControl)!;
+          c.markAsTouched();
+
+          await wait(150);
+
+          expect(spectator.element).toBeVisible();
+        });
       });
     });
   });
@@ -358,3 +408,11 @@ describe('ErrorDirective', () => {
     );
   });
 });
+
+function wait(t: number) {
+  return new Promise<void>((resolve) => {
+    setTimeout(() => {
+      resolve();
+    }, t);
+  });
+}

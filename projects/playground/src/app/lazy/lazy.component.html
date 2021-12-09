@@ -1,3 +1,7 @@
+<ng-container [ngxErrors]="form.get('firstName')!">
+  <div ngxError="required">First name is required</div>
+</ng-container>
+
 <form [formGroup]="form">
   <label>
     First Name
@@ -9,9 +13,7 @@
     Touched: {{ form.controls.firstName.touched }}
   </pre>
 
-  <div ngxErrors="firstName">
-    <div ngxError="required" showWhen="touched">First name is required</div>
-  </div>
+  <hr />
 
   <div formGroupName="address">
     <label>
