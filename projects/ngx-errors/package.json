@@ -1,6 +1,6 @@
 {
   "name": "@ngspot/ngx-errors",
-  "version": "2.0.2",
+  "version": "3.0.0",
   "description": "Handle error messages in Angular forms with ease",
   "peerDependencies": {
     "@angular/core": ">= 9.0.0"

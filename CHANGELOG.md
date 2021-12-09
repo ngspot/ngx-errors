@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## 3.0.0 (2021-12-09)
+
+### ⚠ BREAKING CHANGES
+
+* 🧨 Require Angular v13
+
+### Features
+
+* 🎸 bump Angular to v13 ([a9b18aa](https://github.com/ngspot/ngx-errors/commit/a9b18aac8f78cca778d43f4c897b50f357df742d))
+
 ## 2.0.2 (2021-12-09)
 
 ### Bug Fixes

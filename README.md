@@ -51,6 +51,9 @@ For more info about this see [Advanced configuration](#configuration).
 
 ## Installation
 
+* For Angular >= v13 use @ngspot/ngx-errors@3.x
+* For Angular <  v13 use @ngspot/ngx-errors@2.x
+
 ### NPM
 
 `npm install @ngspot/ngx-errors`

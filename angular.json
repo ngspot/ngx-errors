@@ -125,18 +125,6 @@
             "styles": ["projects/playground/src/styles.scss"],
             "scripts": []
           }
-        },
-        "e2e": {
-          "builder": "@angular-devkit/build-angular:protractor",
-          "options": {
-            "protractorConfig": "projects/playground/e2e/protractor.conf.js",
-            "devServerTarget": "playground:serve"
-          },
-          "configurations": {
-            "production": {
-              "devServerTarget": "playground:serve:production"
-            }
-          }
         }
       }
     }
