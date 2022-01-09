@@ -14,7 +14,6 @@ import {
   FormGroupName,
 } from '@angular/forms';
 import { BehaviorSubject } from 'rxjs';
-import { ShowErrorWhen } from './errors-configuration';
 import {
   ControlInstanceError,
   ControlNotFoundError,
@@ -69,11 +68,11 @@ export class ErrorsDirective implements AfterViewInit {
 
   @Input('ngxErrors') _control: AbstractControl | string;
 
-  @Input() showWhen: ShowErrorWhen;
+  @Input() showWhen: string;
 
   constructor(
-    @Optional() @SkipSelf() public parentForm?: FormGroupDirective,
-    @Optional() @SkipSelf() private parentFormGroupName?: FormGroupName
+    @Optional() @SkipSelf() public parentForm: FormGroupDirective | null,
+    @Optional() @SkipSelf() private parentFormGroupName: FormGroupName | null
   ) {}
 
   ngAfterViewInit() {
@@ -97,6 +96,7 @@ export class ErrorsDirective implements AfterViewInit {
       if (control == null) {
         throw new ControlNotFoundError(this._control);
       }
+
       this.control$.next(control);
       return;
     }
@@ -118,3 +118,10 @@ export class ErrorsDirective implements AfterViewInit {
     );
   }
 }
+
+// class ErrorsSpecificStateMatcher implements ErrorStateMatcher {
+//   isErrorState(control: AbstractControl | null, form: FormGroupDirective | NgForm | null): boolean {
+//     throw new Error('Method not implemented.');
+//   }
+
+// }

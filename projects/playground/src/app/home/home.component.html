@@ -1,1 +1,26 @@
 <p>home works!</p>
+
+<mat-form-field appearance="fill">
+  <mat-label>Name</mat-label>
+
+  <input
+    matInput
+    [(ngModel)]="name"
+    required
+    [minlength]="10"
+    #nameModel="ngModel"
+    autocomplete="off"
+  />
+
+  <mat-error [ngxErrors]="nameModel.control">
+    <span ngxError="required"> Name is required </span>
+
+    <span ngxError="minlength" showWhen="five">
+      Name should be at least 10 chars - FIVE
+    </span>
+
+    <span ngxError="minlength">Name should be at least 10 chars - DIMA</span>
+  </mat-error>
+</mat-form-field>
+
+<pre>{{ nameModel.control.errors | json }}</pre>

@@ -1,5 +1,11 @@
 import { Injectable } from '@angular/core';
 
+/**
+ * @deprecated
+ * This type is deprecated and will be removed in a future version.
+ * This was deprecated because library now provides a way to add additional
+ * configurations with a user-chosen key that can be any string.
+ */
 export type ShowErrorWhen =
   | 'touched'
   | 'dirty'
@@ -18,10 +24,10 @@ export interface IErrorsConfiguration {
    *
    * `'formIsSubmitted'` - shows an error when parent form was submitted.
    */
-  showErrorsWhenInput: ShowErrorWhen;
+  showErrorsWhenInput: string;
 }
 
 @Injectable()
 export class ErrorsConfiguration implements IErrorsConfiguration {
-  showErrorsWhenInput = 'touched' as ShowErrorWhen;
+  showErrorsWhenInput = 'touched';
 }

@@ -10,10 +10,16 @@ import {
 import { AbstractControl } from '@angular/forms';
 import { merge, NEVER, Observable, of, Subscription, timer } from 'rxjs';
 import { auditTime, filter, first, map, switchMap, tap } from 'rxjs/operators';
-import { ErrorsConfiguration, ShowErrorWhen } from './errors-configuration';
+import { ErrorStateMatchers } from './error-state-matchers';
+import { ErrorsConfiguration } from './errors-configuration';
 import { ErrorsDirective } from './errors.directive';
 import { extractTouchedChanges } from './misc';
-import { NoParentNgxErrorsError, ValueMustBeStringError } from './ngx-errors';
+import {
+  InvalidShowWhenError,
+  NoParentNgxErrorsError,
+  ValueMustBeStringError,
+} from './ngx-errors';
+import { OverriddenShowWhen } from './overridden-show-when.service';
 
 /**
  * Directive to provide a validation error for a specific error name.
@@ -38,11 +44,13 @@ export class ErrorDirective implements AfterViewInit, OnDestroy {
 
   @Input('ngxError') errorName: string;
 
-  @Input() showWhen: ShowErrorWhen;
+  @Input() showWhen: string;
 
   err: any = {};
 
   constructor(
+    private errorStateMatchers: ErrorStateMatchers,
+    private overriddenShowWhen: OverriddenShowWhen,
     private cdr: ChangeDetectorRef,
     // ErrorsDirective is actually required.
     // use @Optional so that we can throw a custom error
@@ -62,8 +70,8 @@ export class ErrorDirective implements AfterViewInit, OnDestroy {
     const sub = this.errorsDirective.control$
       .pipe(
         filter((c): c is AbstractControl => !!c),
-        tap(() => {
-          this.initConfig();
+        tap((control) => {
+          this.initConfig(control);
         }),
         tap((control) => {
           touchedChanges$ = extractTouchedChanges(control);
@@ -109,45 +117,42 @@ export class ErrorDirective implements AfterViewInit, OnDestroy {
   private calcShouldDisplay(control: AbstractControl) {
     const hasError = control.hasError(this.errorName);
 
-    // could show error if there is one
-    let couldShowError = false;
-
     const form = this.errorsDirective.parentForm;
 
-    if (form != null && form.submitted) {
-      couldShowError = true;
-    } else {
-      if (
-        this.showWhen === 'touchedAndDirty' &&
-        control.dirty &&
-        control.touched
-      ) {
-        couldShowError = true;
-      }
+    const errorStateMatcher = this.errorStateMatchers.get(this.showWhen);
 
-      if (this.showWhen === 'dirty' && control.dirty) {
-        couldShowError = true;
-      }
-
-      if (this.showWhen === 'touched' && control.touched) {
-        couldShowError = true;
-      }
+    if (!errorStateMatcher) {
+      throw new InvalidShowWhenError(
+        this.showWhen,
+        this.errorStateMatchers.validKeys()
+      );
     }
 
+    const couldShowError = errorStateMatcher.isErrorState(control, form);
+
     this.hidden = !(couldShowError && hasError);
+
+    this.overriddenShowWhen.errorVisibilityChanged(
+      control,
+      this.errorName,
+      this.showWhen,
+      !this.hidden
+    );
 
     this.err = control.getError(this.errorName) || {};
 
     this.cdr.detectChanges();
   }
 
-  private initConfig() {
+  private initConfig(control: AbstractControl) {
     if (this.showWhen) {
+      this.overriddenShowWhen.add(control);
       return;
     }
 
     if (this.errorsDirective.showWhen) {
       this.showWhen = this.errorsDirective.showWhen;
+      this.overriddenShowWhen.add(control);
       return;
     }
 

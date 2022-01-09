@@ -43,3 +43,13 @@ export class ParentFormNotFoundError extends NgxError {
     );
   }
 }
+
+export class InvalidShowWhenError extends NgxError {
+  constructor(showWhen: string, keys: string[]) {
+    super(
+      `Invalid showWhen value: ${showWhen}. Valid values are: ${keys.join(
+        ', '
+      )}`
+    );
+  }
+}

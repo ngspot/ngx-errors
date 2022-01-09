@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { async } from '@angular/core/testing';
+import { waitForAsync } from '@angular/core/testing';
 import {
   AbstractControl,
   AsyncValidatorFn,
@@ -8,13 +8,18 @@ import {
   ReactiveFormsModule,
   Validators,
 } from '@angular/forms';
+import { ShowOnDirtyErrorStateMatcher } from '@angular/material/core';
 import { createDirectiveFactory, SpectatorDirective } from '@ngneat/spectator';
-
+import {
+  ErrorStateMatchers,
+  ShowOnSubmittedErrorStateMatcher,
+  ShowOnTouchedAndDirtyErrorStateMatcher,
+  ShowOnTouchedErrorStateMatcher,
+} from './error-state-matchers';
 import { ErrorDirective } from './error.directive';
 import {
   ErrorsConfiguration,
   IErrorsConfiguration,
-  ShowErrorWhen,
 } from './errors-configuration';
 import { ErrorsDirective } from './errors.directive';
 import { NoParentNgxErrorsError, ValueMustBeStringError } from './ngx-errors';
@@ -22,9 +27,11 @@ import { NoParentNgxErrorsError, ValueMustBeStringError } from './ngx-errors';
 const myAsyncValidator: AsyncValidatorFn = (c: AbstractControl) => {
   return new Promise((resolve) => {
     setTimeout(() => {
-      if (c.value != '123') {
+      if (c.value !== '123') {
         resolve({ isNot123: true });
-      } else resolve(null);
+      } else {
+        resolve(null);
+      }
     }, 50);
   });
 };
@@ -54,17 +61,24 @@ describe('ErrorDirective', () => {
     directive: ErrorDirective,
     declarations: [ErrorsDirective],
     imports: [ReactiveFormsModule],
-    providers: [{ provide: ErrorsConfiguration, useValue: initialConfig }],
+    providers: [
+      { provide: ErrorsConfiguration, useValue: initialConfig },
+      ErrorStateMatchers,
+      ShowOnTouchedErrorStateMatcher,
+      ShowOnDirtyErrorStateMatcher,
+      ShowOnTouchedAndDirtyErrorStateMatcher,
+      ShowOnSubmittedErrorStateMatcher,
+    ],
     host: TestHostComponent,
   });
 
   let template: string;
   let spectator: SpectatorDirective<ErrorDirective, TestHostComponent>;
-  let showWhen: ShowErrorWhen;
+  let showWhen: string;
 
   Given(() => (showWhen = undefined as any));
 
-  function createDirectiveWithConfig(showErrorsWhenInput: ShowErrorWhen) {
+  function createDirectiveWithConfig(showErrorsWhenInput: string) {
     const config: IErrorsConfiguration = { showErrorsWhenInput };
     spectator = createDirective(template, {
       providers: [
@@ -90,7 +104,7 @@ describe('ErrorDirective', () => {
 
   function ExpectErrorVisibilityForStates(opts: {
     expectedVisibility: boolean;
-    forStates: ShowErrorWhen[];
+    forStates: string[];
   }) {
     opts.forStates.forEach((givenShowWhen) => {
       describe(`GIVEN: showWhen: ${givenShowWhen}`, () => {
@@ -118,7 +132,7 @@ describe('ErrorDirective', () => {
   });
 
   describe('PROP: showWhen', () => {
-    let actual: ShowErrorWhen;
+    let actual: string;
 
     When(() => {
       createDirectiveWithConfig(showWhen);
@@ -286,7 +300,7 @@ describe('ErrorDirective', () => {
     });
 
     When(
-      async(() => {
+      waitForAsync(() => {
         createDirectiveWithConfig(showWhen);
         spectator.click('button');
       })
@@ -312,7 +326,7 @@ describe('ErrorDirective', () => {
 
     describe('WHEN: touch an input', () => {
       When(
-        async(() => {
+        waitForAsync(() => {
           createDirectiveWithConfig(showWhen);
           spectator.focus('input');
           spectator.blur('input');
@@ -332,7 +346,7 @@ describe('ErrorDirective', () => {
 
     describe('WHEN: type in the input', () => {
       When(
-        async(() => {
+        waitForAsync(() => {
           createDirectiveWithConfig(showWhen);
           spectator.typeInElement('5', 'input');
         })
@@ -351,7 +365,7 @@ describe('ErrorDirective', () => {
 
     describe('WHEN: type in the input and focus out (touch)', () => {
       When(
-        async(() => {
+        waitForAsync(() => {
           createDirectiveWithConfig(showWhen);
           spectator.typeInElement('5', 'input');
           spectator.blur('input');
@@ -390,7 +404,7 @@ describe('ErrorDirective', () => {
     });
 
     When(
-      async(() => {
+      waitForAsync(() => {
         createDirectiveWithConfig(showWhen);
         spectator.click('button');
       })

@@ -28,12 +28,12 @@ The design of this library promotes less boilerplate code, which keeps your temp
 
 ## Table of Contents
 
-- [How it works](#how_it_works)
+- [How it works](#how-it-works)
 - [Installation](#installation)
 - [Usage](#usage)
 - [Advanced configuration](#configuration)
-- [Handling form submission](#handling_form_submission)
-- [Getting error details](#getting_error_details)
+- [Handling form submission](#handling-form-submission)
+- [Getting error details](#getting-error-details)
 - [Styling](#styling)
 - [Miscellaneous](#miscellaneous)
 - [Development](#development)
@@ -51,8 +51,8 @@ For more info about this see [Advanced configuration](#configuration).
 
 ## Installation
 
-* For Angular >= v13 use @ngspot/ngx-errors@3.x
-* For Angular <  v13 use @ngspot/ngx-errors@2.x
+- For Angular >= v13 use @ngspot/ngx-errors@3.x
+- For Angular < v13 use @ngspot/ngx-errors@2.x
 
 ### NPM
 
@@ -121,6 +121,24 @@ export class MyComponent implements OnInit {
 }
 ```
 
+### Use case with a template driven form control:
+
+```ts
+@Component({
+  selector: 'my-component',
+  template: `
+    <input [(ngModel)]="email" #emailModel="ngModel" required type="email" />
+
+    <div [ngxErrors]="emailModel.control">
+      <div ngxError="required">Email is required</div>
+    </div>
+  `,
+})
+export class MyComponent implements OnInit {
+  email: string;
+}
+```
+
 ## Configuration
 
 Configure when to show messages for whole module by using `.configure()` method:
@@ -185,9 +203,7 @@ You can override the configuration specified at the module level by using `[show
     This will be shown when control is dirty
   </div>
 
-  <div ngxError="min">
-    This will be shown when control is touched and dirty
-  </div>
+  <div ngxError="min">This will be shown when control is touched and dirty</div>
 </div>
 ```
 
@@ -245,9 +261,11 @@ Include something similar to the following in global CSS file:
 ngx-errors library provides a couple of misc function that ease your work with forms.
 
 ### **dependentValidator**
+
 Makes it easy to trigger validation on the control, that depends on a value of a different control
 
 Example with using `FormBuilder`:
+
 ```ts
 import { dependentValidator } from '@ngspot/ngx-errors';
 
@@ -255,20 +273,23 @@ export class LazyComponent {
   constructor(fb: FormBuilder) {
     this.form = fb.group({
       password: ['', Validators.required],
-      confirmPassword: ['', dependentValidator<string>({
-        watchControl: f => f!.get('password')!,
-        validator: (passwordValue) => isEqualToValidator(passwordValue)
-      })],
+      confirmPassword: [
+        '',
+        dependentValidator<string>({
+          watchControl: (f) => f!.get('password')!,
+          validator: (passwordValue) => isEqualToValidator(passwordValue),
+        }),
+      ],
     });
   }
 }
 
 function isEqualToValidator<T>(compareVal: T): ValidatorFn {
-  return function(control: AbstractControl): ValidationErrors | null {
+  return function (control: AbstractControl): ValidationErrors | null {
     return control.value === compareVal
       ? null
       : { match: { expected: compareVal, actual: control.value } };
-  }
+  };
 }
 ```
 
@@ -276,15 +297,20 @@ The `dependentValidator` may also take `condition`. If provided, it needs to ret
 
 ```ts
 const controlA = new FormControl('');
-const controlB = new FormControl('', dependentValidator<string>({
-  watchControl: () => controlA,
-  validator: () => Validators.required,
-  condition: (val) => val === 'fire'
-}));
+const controlB = new FormControl(
+  '',
+  dependentValidator<string>({
+    watchControl: () => controlA,
+    validator: () => Validators.required,
+    condition: (val) => val === 'fire',
+  })
+);
 ```
+
 In the example above, the `controlB` will only be required when `controlA` value is `'fire'`
 
 ### **extractTouchedChanges**
+
 As of today, the FormControl does not provide a way to subscribe to the changes of `touched` status. This function lets you do just that:
 
 ```ts
@@ -292,6 +318,7 @@ As of today, the FormControl does not provide a way to subscribe to the changes 
 ```
 
 ### **markDescendantsAsDirty**
+
 As of today, the FormControl does not provide a way to mark the control and all its children as `dirty`. This function lets you do just that:
 
 ```ts

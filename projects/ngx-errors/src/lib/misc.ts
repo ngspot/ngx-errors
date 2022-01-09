@@ -63,15 +63,15 @@ export function markDescendantsAsDirty(
   control.markAsDirty(options);
 
   if (control instanceof FormGroup || control instanceof FormArray) {
-    let controls = Object.keys(control.controls).map(
-      (controlName) => control.get(controlName)!
+    const controls = Object.keys(control.controls).map(
+      (controlName) => control.get(controlName) as AbstractControl
     );
 
-    controls.forEach((control) => {
-      control.markAsDirty(options);
+    controls.forEach((c) => {
+      c.markAsDirty(options);
 
-      if ((control as FormGroup | FormArray).controls) {
-        markDescendantsAsDirty(control, options);
+      if ((c as FormGroup | FormArray).controls) {
+        markDescendantsAsDirty(c, options);
       }
     });
   }
