@@ -2,29 +2,34 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## 3.1.0 (2022-01-11)
+
+### Features
+
+- 🎸 integrate with MatInput; support arbitrary showWhen ([55fd44a](https://github.com/ngspot/ngx-errors/commit/55fd44a1e946ccee34d9cf979925f5bc4e5a6dfa))
+- 🎸 new config option - showMaxErrors ([d46ba1b](https://github.com/ngspot/ngx-errors/commit/d46ba1be40a4e49be1d0f2e00c88475806c540ea))
+
 ## 3.0.0 (2021-12-09)
 
 ### ⚠ BREAKING CHANGES
 
-* 🧨 Require Angular v13
+- 🧨 Require Angular v13
 
 ### Features
 
-* 🎸 bump Angular to v13 ([a9b18aa](https://github.com/ngspot/ngx-errors/commit/a9b18aac8f78cca778d43f4c897b50f357df742d))
+- 🎸 bump Angular to v13 ([a9b18aa](https://github.com/ngspot/ngx-errors/commit/a9b18aac8f78cca778d43f4c897b50f357df742d))
 
 ## 2.0.2 (2021-12-09)
 
 ### Bug Fixes
 
-* 🐛 not displaying error when async validator present ([684dcf5](https://github.com/ngspot/ngx-errors/commit/684dcf5114a1e2ac9c6c4e64925d6ebf262cc6ba))
+- 🐛 not displaying error when async validator present ([684dcf5](https://github.com/ngspot/ngx-errors/commit/684dcf5114a1e2ac9c6c4e64925d6ebf262cc6ba))
 
 ## 2.0.1 (2021-01-19)
 
-
 ### Features
 
-* 🎸 dependentValidator ([b49b82f](https://github.com/ngspot/ngx-errors/commit/b49b82f9cf75b718288c72f190fa2a09ca1469dc))
-
+- 🎸 dependentValidator ([b49b82f](https://github.com/ngspot/ngx-errors/commit/b49b82f9cf75b718288c72f190fa2a09ca1469dc))
 
 ## 2.0.0 (2020-12-06)
 
