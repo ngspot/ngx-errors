@@ -371,6 +371,8 @@ markDescendantsAsDirty(formControl);
 
 ### Basic Workflow
 
+One time config: `git config --global push.followTags true`
+
 1. Develop
 1. Write specs
 1. Run `npm run test:lib`
@@ -378,6 +380,7 @@ markDescendantsAsDirty(formControl);
 1. Run `npm run release`
 1. Run `npm run build:lib`
 1. Go to the dist directory and run `npm publish`
+1. Push changes `git push`
 
 ### Scripts
 

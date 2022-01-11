@@ -35,5 +35,5 @@ export interface IErrorsConfiguration {
 @Injectable()
 export class ErrorsConfiguration implements IErrorsConfiguration {
   showErrorsWhenInput = 'touched';
-  showMaxErrors = undefined;
+  showMaxErrors: number | undefined = undefined;
 }

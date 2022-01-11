@@ -19,6 +19,7 @@
     "test:lib:coverage": "npm run test:lib -- --code-coverage",
     "postbuild:lib": "copyfiles README.md logo.png dist/ngx-errors",
     "release": "cd projects/ngx-errors && standard-version --infile ../../CHANGELOG.md",
+    "release:dry": "cd projects/ngx-errors && standard-version --infile ../../CHANGELOG.md --dry-run",
     "commitlint": "commitlint",
     "prepare": "husky install"
   },

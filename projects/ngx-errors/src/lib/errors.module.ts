@@ -24,6 +24,17 @@ const declarationsAndExports = [
   SetMatInputErrorStateMatcherDirective,
 ];
 
+const defaultConfig: ErrorsConfiguration = {
+  showErrorsWhenInput: 'touched',
+  showMaxErrors: undefined,
+};
+
+function mergeErrorsConfiguration(
+  config: IErrorsConfiguration
+): ErrorsConfiguration {
+  return { ...defaultConfig, ...config };
+}
+
 @NgModule({
   imports: [ReactiveFormsModule],
   declarations: [...declarationsAndExports],
@@ -37,14 +48,14 @@ const declarationsAndExports = [
 })
 export class NgxErrorsModule {
   static configure(
-    config?: IErrorsConfiguration
+    config: IErrorsConfiguration
   ): ModuleWithProviders<NgxErrorsModule> {
     return {
       ngModule: NgxErrorsModule,
       providers: [
         {
           provide: ErrorsConfiguration,
-          useValue: config,
+          useValue: mergeErrorsConfiguration(config),
         },
         {
           provide: ErrorStateMatcher,
