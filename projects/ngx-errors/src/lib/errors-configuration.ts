@@ -24,7 +24,7 @@ export interface IErrorsConfiguration {
    *
    * `'formIsSubmitted'` - shows an error when parent form was submitted.
    */
-  showErrorsWhenInput: string;
+  showErrorsWhenInput?: string;
 
   /**
    * The maximum amount of errors to display per ngxErrors block.

@@ -93,7 +93,7 @@ export class ErrorsDirective implements AfterViewInit {
 
           const visible =
             !errorCouldBeHidden &&
-            (!this.config.showMaxErrors ||
+            (!this.config?.showMaxErrors ||
               visibleCount <= this.config.showMaxErrors);
 
           arr.push({ key, hidden: !visible });
