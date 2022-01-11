@@ -5,12 +5,12 @@ import {
   FormsModule,
   NgForm,
 } from '@angular/forms';
-import { ErrorStateMatcher } from '@angular/material/core';
 import { MatInputModule } from '@angular/material/input';
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import {
   CUSTOM_ERROR_STATE_MATCHERS,
+  ErrorStateMatcher,
   NgxErrorsModule,
 } from '@ngspot/ngx-errors';
 import { AppRoutingModule } from './app-routing.module';

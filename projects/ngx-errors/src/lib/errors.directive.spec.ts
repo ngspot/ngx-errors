@@ -1,6 +1,12 @@
 import { Component } from '@angular/core';
-import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
+import {
+  AbstractControl,
+  FormControl,
+  FormGroup,
+  ReactiveFormsModule,
+} from '@angular/forms';
 import { createDirectiveFactory, SpectatorDirective } from '@ngneat/spectator';
+import { first } from 'rxjs/operators';
 import { ErrorsDirective } from './errors.directive';
 import {
   ControlNotFoundError,
@@ -55,6 +61,16 @@ describe('ErrorsDirective ', () => {
   });
 
   describe('GIVEN: with parent form', () => {
+    function expectControl(expectedControl: AbstractControl) {
+      let actualControl: AbstractControl | undefined;
+
+      spectator.directive.control$.pipe(first()).subscribe((control) => {
+        actualControl = control;
+      });
+
+      expect(actualControl).toBe(expectedControl);
+    }
+
     describe('GIVEN: control specified as string; control exists', () => {
       Then('should not throw', () => {
         expect(() => {
@@ -68,7 +84,8 @@ describe('ErrorsDirective ', () => {
         const fName = spectator.hostComponent.form.get(
           'firstName'
         ) as FormControl;
-        expect(spectator.directive.control$.getValue()).toBe(fName);
+
+        expectControl(fName);
       });
     });
 
@@ -98,9 +115,7 @@ describe('ErrorsDirective ', () => {
       });
 
       Then('control should be the "street"', () => {
-        expect(spectator.directive.control$.getValue()).toBe(
-          spectator.hostComponent.street
-        );
+        expectControl(spectator.hostComponent.street);
       });
     });
 
@@ -118,9 +133,7 @@ describe('ErrorsDirective ', () => {
       });
 
       Then('control should be the "street"', () => {
-        expect(spectator.directive.control$.getValue()).toBe(
-          spectator.hostComponent.street
-        );
+        expectControl(spectator.hostComponent.street);
       });
     });
   });

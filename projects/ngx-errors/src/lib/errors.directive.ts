@@ -14,6 +14,9 @@ import {
   FormGroupName,
 } from '@angular/forms';
 import { BehaviorSubject } from 'rxjs';
+import { distinctUntilChanged, map, shareReplay } from 'rxjs/operators';
+import { ErrorsConfiguration } from './errors-configuration';
+import { filterOutNullish } from './misc';
 import {
   ControlInstanceError,
   ControlNotFoundError,
@@ -64,19 +67,69 @@ import {
   exportAs: 'ngxErrors',
 })
 export class ErrorsDirective implements AfterViewInit {
-  control$ = new BehaviorSubject<AbstractControl | undefined>(undefined);
+  private control$$ = new BehaviorSubject<AbstractControl | undefined>(
+    undefined
+  );
+  control$ = this.control$$.asObservable().pipe(filterOutNullish());
 
   @Input('ngxErrors') _control: AbstractControl | string;
 
   @Input() showWhen: string;
 
+  private errorsCouldBeHidden$$ = new BehaviorSubject<Record<string, boolean>>(
+    {}
+  );
+
+  private errorsVisibility$ = this.errorsCouldBeHidden$$.asObservable().pipe(
+    map((errorsCouldBeHidden) => {
+      const arr = [];
+      let visibleCount = 0;
+      for (const key in errorsCouldBeHidden) {
+        if (errorsCouldBeHidden.hasOwnProperty(key)) {
+          const errorCouldBeHidden = errorsCouldBeHidden[key];
+          if (!errorCouldBeHidden) {
+            visibleCount++;
+          }
+
+          const visible =
+            !errorCouldBeHidden &&
+            (!this.config.showMaxErrors ||
+              visibleCount <= this.config.showMaxErrors);
+
+          arr.push({ key, hidden: !visible });
+        }
+      }
+      return arr;
+    }),
+    shareReplay(1)
+  );
+
   constructor(
     @Optional() @SkipSelf() public parentForm: FormGroupDirective | null,
-    @Optional() @SkipSelf() private parentFormGroupName: FormGroupName | null
+    @Optional() @SkipSelf() private parentFormGroupName: FormGroupName | null,
+    @Optional() private config: ErrorsConfiguration
   ) {}
 
   ngAfterViewInit() {
     this.initAndValidateDirective();
+  }
+
+  visibilityForKey$(key: string) {
+    return this.errorsVisibility$.pipe(
+      map((errors) => errors.find((error) => error.key === key)),
+      filterOutNullish(),
+      map((error) => error.hidden),
+      distinctUntilChanged()
+    );
+  }
+
+  visibilityChanged(errorName: string, showWhen: string, hidden: boolean) {
+    const key = `${errorName}-${showWhen}`;
+    const val = this.errorsCouldBeHidden$$.getValue();
+    if (val[key] !== hidden) {
+      const newVal = { ...val, [key]: hidden };
+      this.errorsCouldBeHidden$$.next(newVal);
+    }
   }
 
   private initAndValidateDirective() {
@@ -97,7 +150,7 @@ export class ErrorsDirective implements AfterViewInit {
         throw new ControlNotFoundError(this._control);
       }
 
-      this.control$.next(control);
+      this.control$$.next(control);
       return;
     }
 
@@ -105,7 +158,7 @@ export class ErrorsDirective implements AfterViewInit {
       throw new ControlInstanceError();
     }
 
-    this.control$.next(this._control);
+    this.control$$.next(this._control);
   }
 
   private isAbstractControl(
@@ -118,10 +171,3 @@ export class ErrorsDirective implements AfterViewInit {
     );
   }
 }
-
-// class ErrorsSpecificStateMatcher implements ErrorStateMatcher {
-//   isErrorState(control: AbstractControl | null, form: FormGroupDirective | NgForm | null): boolean {
-//     throw new Error('Method not implemented.');
-//   }
-
-// }

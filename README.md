@@ -31,7 +31,7 @@ The design of this library promotes less boilerplate code, which keeps your temp
 - [How it works](#how-it-works)
 - [Installation](#installation)
 - [Usage](#usage)
-- [Advanced configuration](#configuration)
+- [Configuration](#configuration)
 - [Handling form submission](#handling-form-submission)
 - [Getting error details](#getting-error-details)
 - [Styling](#styling)
@@ -173,7 +173,9 @@ Here's the configuration object interface:
 ```ts
 export interface IErrorsConfiguration {
   /**
-   * Configures when to display an error for an invalid control. Available options are:
+   * Configures when to display an error for an invalid control. Options that
+   * are available by default are listed below. Note, custom options can be
+   * provided using CUSTOM_ERROR_STATE_MATCHERS injection token.
    *
    * `'touched'` - *[default]* shows an error when control is marked as touched. For example, user focused on the input and clicked away or tabbed through the input.
    *
@@ -183,15 +185,55 @@ export interface IErrorsConfiguration {
    *
    * `'formIsSubmitted'` - shows an error when parent form was submitted.
    */
-  showErrorsWhenInput: ShowErrorWhen;
-}
+  showErrorsWhenInput: string;
 
-export type ShowErrorWhen =
-  | 'touched'
-  | 'dirty'
-  | 'touchedAndDirty'
-  | 'formIsSubmitted';
+  /**
+   * The maximum amount of errors to display per ngxErrors block.
+   */
+  showMaxErrors?: number;
+}
 ```
+
+### Providing custom logic for displaying errors
+
+By default, the following error state matchers for displaying errors can be used: `'touched'`, `'dirty'`, `'touchedAndDirty'`, `'formIsSubmitted'`.
+
+Custom error state matchers can be added using the `CUSTOM_ERROR_STATE_MATCHERS` injection token.
+
+First, define the new error state matcher:
+
+```ts
+@Injectable({ providedIn: 'root' })
+export class MyAwesomeErrorStateMatcher implements ErrorStateMatcher {
+  isErrorState(
+    control: AbstractControl | null,
+    form: FormGroupDirective | NgForm | null
+  ): boolean {
+    return !!(control && control.value && /* my awesome logic is here */);
+  }
+}
+```
+
+Second, use the new error state matcher when providing `CUSTOM_ERROR_STATE_MATCHERS` in the AppModule:
+
+```ts
+providers: [
+  {
+    provide: CUSTOM_ERROR_STATE_MATCHERS,
+    deps: [MyAwesomeErrorStateMatcher],
+    useFactory: (myAwesomeErrorStateMatcher: MyAwesomeErrorStateMatcher) => {
+      return {
+        myAwesome: myAwesomeErrorStateMatcher,
+      };
+    },
+  },
+];
+```
+
+Now the string `'myAwesome'` can be used either in the `showErrorsWhenInput` property of the configuration object or in the `[showWhen]` inputs.
+
+> In the example above, notice the use of the `ErrorStateMatcher` class. This class actually comes from `@angular/material/core`. Under the hood, @ngspot/ngx-errors uses the `ErrorStateMatcher` class to implement all available error state matchers allowing @ngspot/ngx-errors to integrate with Angular Material inputs smoothly.  
+> Looking at the [documentation](https://material.angular.io/components/input/overview#changing-when-error-messages-are-shown), Angular Material inputs have their own way of setting logic for determining if the input needs to be highlighted red or not. If custom behavior is needed, a developer needs to provide appropriate configuration. @ngspot/ngx-errors configures this functionality for the developer under the hood.
 
 ### Overriding global config
 

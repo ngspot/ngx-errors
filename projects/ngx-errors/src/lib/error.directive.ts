@@ -60,7 +60,14 @@ export class ErrorDirective implements AfterViewInit, OnDestroy {
 
   ngAfterViewInit() {
     this.validateDirective();
+    this.watchForEventsTriggeringVisibilityChange();
+  }
 
+  ngOnDestroy() {
+    this.subs.unsubscribe();
+  }
+
+  private watchForEventsTriggeringVisibilityChange() {
     const ngSubmit$ = this.errorsDirective.parentForm
       ? this.errorsDirective.parentForm.ngSubmit
       : NEVER;
@@ -69,9 +76,9 @@ export class ErrorDirective implements AfterViewInit, OnDestroy {
 
     const sub = this.errorsDirective.control$
       .pipe(
-        filter((c): c is AbstractControl => !!c),
         tap((control) => {
           this.initConfig(control);
+          this.watchForVisibilityChange(control);
         }),
         tap((control) => {
           touchedChanges$ = extractTouchedChanges(control);
@@ -110,10 +117,6 @@ export class ErrorDirective implements AfterViewInit, OnDestroy {
     this.subs.add(sub);
   }
 
-  ngOnDestroy() {
-    this.subs.unsubscribe();
-  }
-
   private calcShouldDisplay(control: AbstractControl) {
     const hasError = control.hasError(this.errorName);
 
@@ -128,20 +131,41 @@ export class ErrorDirective implements AfterViewInit, OnDestroy {
       );
     }
 
-    const couldShowError = errorStateMatcher.isErrorState(control, form);
+    const hasErrorState = errorStateMatcher.isErrorState(control, form);
 
-    this.hidden = !(couldShowError && hasError);
+    const couldBeHidden = !(hasErrorState && hasError);
 
-    this.overriddenShowWhen.errorVisibilityChanged(
-      control,
+    this.errorsDirective.visibilityChanged(
       this.errorName,
       this.showWhen,
-      !this.hidden
+      couldBeHidden
     );
+  }
 
-    this.err = control.getError(this.errorName) || {};
+  private watchForVisibilityChange(control: AbstractControl) {
+    const key = `${this.errorName}-${this.showWhen}`;
 
-    this.cdr.detectChanges();
+    const sub = this.errorsDirective
+      .visibilityForKey$(key)
+      .pipe(
+        tap((hidden) => {
+          this.hidden = hidden;
+
+          this.overriddenShowWhen.errorVisibilityChanged(
+            control,
+            this.errorName,
+            this.showWhen,
+            !this.hidden
+          );
+
+          this.err = control.getError(this.errorName) || {};
+
+          this.cdr.detectChanges();
+        })
+      )
+      .subscribe();
+
+    this.subs.add(sub);
   }
 
   private initConfig(control: AbstractControl) {

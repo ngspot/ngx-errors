@@ -24,11 +24,12 @@ export class OverriddenShowWhen {
     isVisible: boolean
   ) {
     const errorsShown = this.controls.get(control);
-    const key = `${errorName}-${showWhen}`;
 
     if (!errorsShown) {
       return;
     }
+
+    const key = `${errorName}-${showWhen}`;
 
     if (isVisible && !errorsShown.includes(key)) {
       const newErrorNamesShown = [...errorsShown, key];

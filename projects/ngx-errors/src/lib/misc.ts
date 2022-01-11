@@ -1,5 +1,12 @@
 import { AbstractControl, FormArray, FormGroup } from '@angular/forms';
-import { Observable, Subject } from 'rxjs';
+import {
+  Observable,
+  OperatorFunction,
+  pipe,
+  Subject,
+  UnaryFunction,
+} from 'rxjs';
+import { filter } from 'rxjs/operators';
 
 /**
  * Extract arguments of function
@@ -75,4 +82,13 @@ export function markDescendantsAsDirty(
       }
     });
   }
+}
+
+export function filterOutNullish<T>(): UnaryFunction<
+  Observable<T | null | undefined>,
+  Observable<T>
+> {
+  return pipe(
+    filter((x) => x != null) as OperatorFunction<T | null | undefined, T>
+  );
 }

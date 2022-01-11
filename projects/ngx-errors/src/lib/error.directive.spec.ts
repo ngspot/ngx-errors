@@ -40,6 +40,10 @@ const myAsyncValidator: AsyncValidatorFn = (c: AbstractControl) => {
 class TestHostComponent {
   validInitialVal = new FormControl('val', Validators.required);
   invalidInitialVal = new FormControl('', Validators.required);
+  multipleErrors = new FormControl('123456', [
+    Validators.minLength(10),
+    Validators.maxLength(3),
+  ]);
 
   form = new FormGroup({
     validInitialVal: new FormControl('val', Validators.required),
@@ -78,8 +82,14 @@ describe('ErrorDirective', () => {
 
   Given(() => (showWhen = undefined as any));
 
-  function createDirectiveWithConfig(showErrorsWhenInput: string) {
+  function createDirectiveWithConfig(
+    showErrorsWhenInput: string,
+    showMaxErrors?: number
+  ) {
     const config: IErrorsConfiguration = { showErrorsWhenInput };
+    if (showMaxErrors !== undefined) {
+      config.showMaxErrors = showMaxErrors;
+    }
     spectator = createDirective(template, {
       providers: [
         {
@@ -281,6 +291,34 @@ describe('ErrorDirective', () => {
 
           expect(spectator.element).toBeVisible();
         });
+      });
+    });
+  });
+
+  describe('TEST: limiting amount of visible ngxError', () => {
+    let showMaxErrors: number;
+
+    When(() => {
+      template = `
+        <ng-container [ngxErrors]="multipleErrors">
+          <div ngxError="minlength">minlength</div>
+          <div ngxError="maxlength">maxlength</div>
+        </ng-container>`;
+      createDirectiveWithConfig(showWhen, showMaxErrors);
+      spectator.hostComponent.multipleErrors.markAsTouched();
+      spectator.hostComponent.multipleErrors.markAsDirty();
+    });
+
+    describe('GIVEN: showMaxErrors is 1', () => {
+      Given(() => {
+        showMaxErrors = 1;
+        showWhen = 'touched';
+      });
+
+      Then(async () => {
+        await wait(0);
+        const errors = spectator.queryAll('[ngxerror]:not([hidden])');
+        expect(errors.length).toBe(1);
       });
     });
   });
