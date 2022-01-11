@@ -11,11 +11,11 @@ import {
 import { ShowOnDirtyErrorStateMatcher } from '@angular/material/core';
 import { createDirectiveFactory, SpectatorDirective } from '@ngneat/spectator';
 import {
-  ErrorStateMatchers,
   ShowOnSubmittedErrorStateMatcher,
   ShowOnTouchedAndDirtyErrorStateMatcher,
   ShowOnTouchedErrorStateMatcher,
 } from './error-state-matchers';
+import { ErrorStateMatchers } from './error-state-matchers.service';
 import { ErrorDirective } from './error.directive';
 import {
   ErrorsConfiguration,

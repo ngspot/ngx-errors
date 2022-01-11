@@ -10,7 +10,7 @@ import {
 import { AbstractControl } from '@angular/forms';
 import { merge, NEVER, Observable, of, Subscription, timer } from 'rxjs';
 import { auditTime, filter, first, map, switchMap, tap } from 'rxjs/operators';
-import { ErrorStateMatchers } from './error-state-matchers';
+import { ErrorStateMatchers } from './error-state-matchers.service';
 import { ErrorsConfiguration } from './errors-configuration';
 import { ErrorsDirective } from './errors.directive';
 import { extractTouchedChanges } from './misc';

@@ -4,6 +4,8 @@ import { ErrorStateMatcher as MatErrorStateMatcher } from '@angular/material/cor
  */
 
 export * from './lib/custom-error-state-matchers';
+export * from './lib/error-state-matchers';
+export * from './lib/error-state-matchers.service';
 export * from './lib/error.directive';
 export * from './lib/errors-configuration';
 export * from './lib/errors.directive';
