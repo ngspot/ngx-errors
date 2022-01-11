@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## 3.1.2 (2022-01-11)
+
+### Bug Fixes
+
+- 🐛 missed null check for showMaxErrors ([66f2f4c](https://github.com/ngspot/ngx-errors/commit/66f2f4cef75381de843ed4f72189c5df5faad650))
+
 ## 3.1.1 (2022-01-11)
 
 ### Bug Fixes
