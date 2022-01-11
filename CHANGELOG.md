@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [3.1.3](https://github.com/ngspot/ngx-errors/compare/v3.1.2...v3.1.3) (2022-01-11)
+
+
+### Bug Fixes
+
+* 🐛 provide config defaults ([5242c70](https://github.com/ngspot/ngx-errors/commit/5242c70a30968af5ea8e9c77b6d755b4886734f8))
+
 ## 3.1.2 (2022-01-11)
 
 ### Bug Fixes
