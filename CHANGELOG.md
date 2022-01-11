@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## 3.1.1 (2022-01-11)
+
+### Bug Fixes
+
+- 🐛 class used before it was declared ([66d27a6](https://github.com/ngspot/ngx-errors/commit/66d27a65930d208e63ddfae87a683abfa0912423))
+
 ## 3.1.0 (2022-01-11)
 
 ### Features
