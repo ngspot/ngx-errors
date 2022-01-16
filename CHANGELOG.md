@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [3.1.4](https://github.com/ngspot/ngx-errors/compare/v3.1.3...v3.1.4) (2022-01-16)
+
+
+### Bug Fixes
+
+* 🐛 providing errorsModule in the lazy app module ([b2f1488](https://github.com/ngspot/ngx-errors/commit/b2f1488a2d3ea004ca6fa0d25b90c240e60e38c6))
+
 ### [3.1.3](https://github.com/ngspot/ngx-errors/compare/v3.1.2...v3.1.3) (2022-01-11)
 
 
