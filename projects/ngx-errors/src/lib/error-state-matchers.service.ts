@@ -13,7 +13,7 @@ import {
   ShowOnTouchedErrorStateMatcher,
 } from './error-state-matchers';
 
-@Injectable({ providedIn: 'root' })
+@Injectable()
 export class ErrorStateMatchers {
   private matchers: { [key: string]: ErrorStateMatcher } = {};
 

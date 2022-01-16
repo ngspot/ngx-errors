@@ -7,6 +7,7 @@ import {
 } from '@angular/forms';
 import { createDirectiveFactory, SpectatorDirective } from '@ngneat/spectator';
 import { first } from 'rxjs/operators';
+import { ErrorsConfiguration } from './errors-configuration';
 import { ErrorsDirective } from './errors.directive';
 import {
   ControlNotFoundError,
@@ -32,6 +33,7 @@ describe('ErrorsDirective ', () => {
     directive: ErrorsDirective,
     host: TestHostComponent,
     imports: [ReactiveFormsModule],
+    providers: [ErrorsConfiguration],
   });
 
   it('should throw if no control is provided', () => {

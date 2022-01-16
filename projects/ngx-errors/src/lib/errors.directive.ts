@@ -93,7 +93,7 @@ export class ErrorsDirective implements AfterViewInit {
 
           const visible =
             !errorCouldBeHidden &&
-            (!this.config?.showMaxErrors ||
+            (!this.config.showMaxErrors ||
               visibleCount <= this.config.showMaxErrors);
 
           arr.push({ key, hidden: !visible });
@@ -107,7 +107,7 @@ export class ErrorsDirective implements AfterViewInit {
   constructor(
     @Optional() @SkipSelf() public parentForm: FormGroupDirective | null,
     @Optional() @SkipSelf() private parentFormGroupName: FormGroupName | null,
-    @Optional() private config: ErrorsConfiguration
+    private config: ErrorsConfiguration
   ) {}
 
   ngAfterViewInit() {

@@ -10,6 +10,9 @@ import { dependentValidator } from '@ngspot/ngx-errors';
 })
 export class LazyComponent implements OnInit {
   form: FormGroup;
+
+  name: string;
+
   constructor(fb: FormBuilder) {
     this.form = fb.group({
       firstName: ['', Validators.required],

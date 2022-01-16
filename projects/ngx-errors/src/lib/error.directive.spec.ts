@@ -83,10 +83,13 @@ describe('ErrorDirective', () => {
   Given(() => (showWhen = undefined as any));
 
   function createDirectiveWithConfig(
-    showErrorsWhenInput: string,
+    showErrorsWhenInput: string | undefined,
     showMaxErrors?: number
   ) {
-    const config: IErrorsConfiguration = { showErrorsWhenInput };
+    const config = new ErrorsConfiguration();
+    if (showErrorsWhenInput) {
+      config.showErrorsWhenInput = showErrorsWhenInput;
+    }
     if (showMaxErrors !== undefined) {
       config.showMaxErrors = showMaxErrors;
     }

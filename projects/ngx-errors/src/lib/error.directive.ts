@@ -49,13 +49,13 @@ export class ErrorDirective implements AfterViewInit, OnDestroy {
   err: any = {};
 
   constructor(
+    private config: ErrorsConfiguration,
     private errorStateMatchers: ErrorStateMatchers,
     private overriddenShowWhen: OverriddenShowWhen,
     private cdr: ChangeDetectorRef,
     // ErrorsDirective is actually required.
     // use @Optional so that we can throw a custom error
-    @Optional() private errorsDirective: ErrorsDirective,
-    @Optional() private config: ErrorsConfiguration
+    @Optional() private errorsDirective: ErrorsDirective
   ) {}
 
   ngAfterViewInit() {
@@ -180,7 +180,7 @@ export class ErrorDirective implements AfterViewInit, OnDestroy {
       return;
     }
 
-    this.showWhen = this.config?.showErrorsWhenInput ?? 'touched';
+    this.showWhen = this.config.showErrorsWhenInput;
 
     if (
       this.showWhen === 'formIsSubmitted' &&

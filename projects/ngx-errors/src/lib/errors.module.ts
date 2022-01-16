@@ -1,4 +1,4 @@
-import { ModuleWithProviders, NgModule } from '@angular/core';
+import { ModuleWithProviders, NgModule, Provider } from '@angular/core';
 import { ReactiveFormsModule } from '@angular/forms';
 import {
   ErrorStateMatcher,
@@ -35,16 +35,19 @@ function mergeErrorsConfiguration(
   return { ...defaultConfig, ...config };
 }
 
+export const ERROR_STATE_MATCHER_PROVIDERS: Provider[] = [
+  ErrorStateMatchers,
+  ShowOnTouchedErrorStateMatcher,
+  ShowOnDirtyErrorStateMatcher,
+  ShowOnTouchedAndDirtyErrorStateMatcher,
+  ShowOnSubmittedErrorStateMatcher,
+];
+
 @NgModule({
   imports: [ReactiveFormsModule],
   declarations: [...declarationsAndExports],
   exports: [...declarationsAndExports],
-  providers: [
-    ShowOnTouchedErrorStateMatcher,
-    ShowOnDirtyErrorStateMatcher,
-    ShowOnTouchedAndDirtyErrorStateMatcher,
-    ShowOnSubmittedErrorStateMatcher,
-  ],
+  providers: [ErrorsConfiguration, ...ERROR_STATE_MATCHER_PROVIDERS],
 })
 export class NgxErrorsModule {
   static configure(
@@ -53,6 +56,7 @@ export class NgxErrorsModule {
     return {
       ngModule: NgxErrorsModule,
       providers: [
+        ...ERROR_STATE_MATCHER_PROVIDERS,
         {
           provide: ErrorsConfiguration,
           useValue: mergeErrorsConfiguration(config),
