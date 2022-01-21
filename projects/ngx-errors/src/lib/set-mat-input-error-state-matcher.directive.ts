@@ -17,6 +17,10 @@ export class SetMatInputErrorStateMatcherDirective implements OnDestroy {
     @Self() private matInput: MatInput,
     private overriddenShowWhen: OverriddenShowWhen
   ) {
+    if (!this.matInput.ngControl) {
+      return;
+    }
+
     const control = this.matInput.ngControl.control;
 
     const sub = overriddenShowWhen.controlOverridden$

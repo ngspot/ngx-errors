@@ -31,6 +31,8 @@
   <button type="submit">Submit</button>
 </form>
 
+<hr />
+
 <mat-form-field appearance="fill">
   <mat-label>Name</mat-label>
 
@@ -52,4 +54,10 @@
 
     <span ngxError="minlength">Name should be at least 10 chars - DIMA</span>
   </mat-error>
+</mat-form-field>
+
+<mat-form-field appearance="fill">
+  <mat-label>Name</mat-label>
+
+  <input matInput value="Input without ngModel" required autocomplete="off" />
 </mat-form-field>
