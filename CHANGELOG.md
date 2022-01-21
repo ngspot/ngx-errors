@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [3.1.5](https://github.com/ngspot/ngx-errors/compare/v3.1.4...v3.1.5) (2022-01-21)
+
+
+### Bug Fixes
+
+* 🐛 broken matInput without ngModel ([e8d6f47](https://github.com/ngspot/ngx-errors/commit/e8d6f47ee38fa3effeb59ec59787261291f4d07c))
+
 ### [3.1.4](https://github.com/ngspot/ngx-errors/compare/v3.1.3...v3.1.4) (2022-01-16)
 
 
