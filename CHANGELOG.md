@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [3.2.0](https://github.com/ngspot/ngx-errors/compare/v3.1.5...v3.2.0) (2022-02-04)
+
+
+### Features
+
+* 🎸 move material deps into @ngspot/ngx-errors-material ([ad49c7c](https://github.com/ngspot/ngx-errors/commit/ad49c7cca52a24be83e80fb3738ebcd450a3f5ab)), closes [#9](https://github.com/ngspot/ngx-errors/issues/9)
+
 ### [3.1.5](https://github.com/ngspot/ngx-errors/compare/v3.1.4...v3.1.5) (2022-01-21)
 
 
