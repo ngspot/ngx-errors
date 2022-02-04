@@ -204,7 +204,7 @@ First, define the new error state matcher:
 
 ```ts
 @Injectable({ providedIn: 'root' })
-export class MyAwesomeErrorStateMatcher implements ErrorStateMatcher {
+export class MyAwesomeErrorStateMatcher implements IErrorStateMatcher {
   isErrorState(
     control: AbstractControl | null,
     form: FormGroupDirective | NgForm | null
@@ -231,9 +231,6 @@ providers: [
 ```
 
 Now the string `'myAwesome'` can be used either in the `showErrorsWhenInput` property of the configuration object or in the `[showWhen]` inputs.
-
-> In the example above, notice the use of the `ErrorStateMatcher` class. This class actually comes from `@angular/material/core`. Under the hood, @ngspot/ngx-errors uses the `ErrorStateMatcher` class to implement all available error state matchers allowing @ngspot/ngx-errors to integrate with Angular Material inputs smoothly.  
-> Looking at the [documentation](https://material.angular.io/components/input/overview#changing-when-error-messages-are-shown), Angular Material inputs have their own way of setting logic for determining if the input needs to be highlighted red or not. If custom behavior is needed, a developer needs to provide appropriate configuration. @ngspot/ngx-errors configures this functionality for the developer under the hood.
 
 ### Overriding global config
 
@@ -296,6 +293,29 @@ Include something similar to the following in global CSS file:
 [ngxerrors] {
   color: red;
 }
+```
+
+## Integration with @angular/material
+
+Angular Material inputs have [their own way](https://material.angular.io/components/input/overview#changing-when-error-messages-are-shown) of setting logic for determining if the input needs to be highlighted red or not. If custom behavior is needed, a developer needs to provide appropriate configuration. @ngspot/ngx-errors configures this functionality for the developer under the hood. In order for this configuration to integrate with @angular/material inputs smoothly, use package `@ngspot/ngx-errors-material`:
+
+Install:
+
+```
+npm install @ngspot/ngx-errors-material
+```
+
+Use:
+
+```ts
+import { NgxErrorsMaterialModule } from '@ngspot/ngx-errors-material';
+
+@NgModule({
+  imports: [
+    // ...
+    NgxErrorsMaterialModule
+  ]
+})
 ```
 
 ## Miscellaneous

@@ -1,10 +1,7 @@
 import { ModuleWithProviders, NgModule, Provider } from '@angular/core';
 import { ReactiveFormsModule } from '@angular/forms';
 import {
-  ErrorStateMatcher,
   ShowOnDirtyErrorStateMatcher,
-} from '@angular/material/core';
-import {
   ShowOnSubmittedErrorStateMatcher,
   ShowOnTouchedAndDirtyErrorStateMatcher,
   ShowOnTouchedErrorStateMatcher,
@@ -16,13 +13,8 @@ import {
   IErrorsConfiguration,
 } from './errors-configuration';
 import { ErrorsDirective } from './errors.directive';
-import { SetMatInputErrorStateMatcherDirective } from './set-mat-input-error-state-matcher.directive';
 
-const declarationsAndExports = [
-  ErrorsDirective,
-  ErrorDirective,
-  SetMatInputErrorStateMatcherDirective,
-];
+const declarationsAndExports = [ErrorsDirective, ErrorDirective];
 
 const defaultConfig: ErrorsConfiguration = {
   showErrorsWhenInput: 'touched',
@@ -60,18 +52,6 @@ export class NgxErrorsModule {
         {
           provide: ErrorsConfiguration,
           useValue: mergeErrorsConfiguration(config),
-        },
-        {
-          provide: ErrorStateMatcher,
-          useFactory: (
-            errorsConfiguration: ErrorsConfiguration,
-            errorStateMatchers: ErrorStateMatchers
-          ) => {
-            return errorStateMatchers.get(
-              errorsConfiguration.showErrorsWhenInput
-            );
-          },
-          deps: [ErrorsConfiguration, ErrorStateMatchers],
         },
       ],
     };

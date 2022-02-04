@@ -1,9 +1,9 @@
 import { Injectable } from '@angular/core';
 import { AbstractControl, FormGroupDirective, NgForm } from '@angular/forms';
-import { ErrorStateMatcher } from '@ngspot/ngx-errors';
+import { IErrorStateMatcher } from '@ngspot/ngx-errors';
 
 @Injectable({ providedIn: 'root' })
-export class ShowOnDimaErrorStateMatcher implements ErrorStateMatcher {
+export class ShowOnDimaErrorStateMatcher implements IErrorStateMatcher {
   isErrorState(
     control: AbstractControl | null,
     _form: FormGroupDirective | NgForm | null

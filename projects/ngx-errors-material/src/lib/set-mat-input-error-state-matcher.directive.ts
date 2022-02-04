@@ -1,9 +1,9 @@
 import { Directive, OnDestroy, Self } from '@angular/core';
 import { ErrorStateMatcher } from '@angular/material/core';
 import { MatInput } from '@angular/material/input';
+import { OverriddenShowWhen } from '@ngspot/ngx-errors';
 import { Subscription } from 'rxjs';
 import { tap } from 'rxjs/operators';
-import { OverriddenShowWhen } from './overridden-show-when.service';
 
 @Directive({
   // tslint:disable-next-line: directive-selector

@@ -1,0 +1,33 @@
+{
+  "name": "@ngspot/ngx-errors-material",
+  "version": "3.0.0",
+  "peerDependencies": {
+    "@angular/core": "^13.0.0",
+    "@angular/material": "^13.0.0"
+  },
+  "author": {
+    "name": "Dmitry Efimenko",
+    "email": "dmitrief@gmail.com"
+  },
+  "keywords": [
+    "angular",
+    "validation",
+    "reactive forms",
+    "material"
+  ],
+  "license": "MIT",
+  "homepage": "https://github.com/ngspot/ngx-errors",
+  "publishConfig": {
+    "access": "public"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ngspot/ngx-errors"
+  },
+  "dependencies": {
+    "tslib": "^2.3.0"
+  },
+  "bugs": {
+    "url": "https://github.com/ngspot/ngx-errors/issues"
+  }
+}

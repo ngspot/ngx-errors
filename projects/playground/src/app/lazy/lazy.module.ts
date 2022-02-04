@@ -3,6 +3,7 @@ import { NgModule } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatInputModule } from '@angular/material/input';
 import { NgxErrorsModule } from '@ngspot/ngx-errors';
+import { NgxErrorsMaterialModule } from '@ngspot/ngx-errors-material';
 import { CUSTOM_ERROR_STATE_MATCHERS_PROVIDER } from '../custom-matchers/provider';
 import { LazyRoutingModule } from './lazy-routing.module';
 import { LazyComponent } from './lazy.component';
@@ -18,6 +19,7 @@ import { LazyComponent } from './lazy.component';
     NgxErrorsModule.configure({
       showErrorsWhenInput: 'touched',
     }),
+    NgxErrorsMaterialModule,
   ],
   providers: [CUSTOM_ERROR_STATE_MATCHERS_PROVIDER],
 })

@@ -1,13 +1,11 @@
 import { Inject, Injectable, Optional } from '@angular/core';
 import {
-  ErrorStateMatcher,
-  ShowOnDirtyErrorStateMatcher,
-} from '@angular/material/core';
-import {
   CustomErrorStateMatchers,
   CUSTOM_ERROR_STATE_MATCHERS,
+  IErrorStateMatcher,
 } from './custom-error-state-matchers';
 import {
+  ShowOnDirtyErrorStateMatcher,
   ShowOnSubmittedErrorStateMatcher,
   ShowOnTouchedAndDirtyErrorStateMatcher,
   ShowOnTouchedErrorStateMatcher,
@@ -15,7 +13,7 @@ import {
 
 @Injectable()
 export class ErrorStateMatchers {
-  private matchers: { [key: string]: ErrorStateMatcher } = {};
+  private matchers: { [key: string]: IErrorStateMatcher } = {};
 
   constructor(
     showOnTouchedErrorStateMatcher: ShowOnTouchedErrorStateMatcher,
@@ -35,7 +33,7 @@ export class ErrorStateMatchers {
     }
   }
 
-  get(showWhen: string): ErrorStateMatcher | undefined {
+  get(showWhen: string): IErrorStateMatcher | undefined {
     return this.matchers[showWhen];
   }
 

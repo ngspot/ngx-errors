@@ -8,9 +8,9 @@ import {
   ReactiveFormsModule,
   Validators,
 } from '@angular/forms';
-import { ShowOnDirtyErrorStateMatcher } from '@angular/material/core';
 import { createDirectiveFactory, SpectatorDirective } from '@ngneat/spectator';
 import {
+  ShowOnDirtyErrorStateMatcher,
   ShowOnSubmittedErrorStateMatcher,
   ShowOnTouchedAndDirtyErrorStateMatcher,
   ShowOnTouchedErrorStateMatcher,

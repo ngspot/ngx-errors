@@ -22,6 +22,10 @@
       "@ngspot/ngx-errors": [
         "dist/ngx-errors/ngspot-ngx-errors",
         "dist/ngx-errors"
+      ],
+      "@ngspot/ngx-errors-material": [
+        "dist/ngx-errors-material/ngspot-ngx-errors-material",
+        "dist/ngx-errors-material"
       ]
     }
   },
