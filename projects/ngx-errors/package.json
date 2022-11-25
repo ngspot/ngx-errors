@@ -12,7 +12,8 @@
   "keywords": [
     "angular",
     "validation",
-    "reactive forms"
+    "reactive forms",
+    "template-driven forms"
   ],
   "license": "MIT",
   "homepage": "https://github.com/ngspot/ngx-errors",

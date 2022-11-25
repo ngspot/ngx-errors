@@ -1,5 +1,4 @@
 import { ModuleWithProviders, NgModule, Provider } from '@angular/core';
-import { ReactiveFormsModule } from '@angular/forms';
 import {
   ShowOnDirtyErrorStateMatcher,
   ShowOnSubmittedErrorStateMatcher,
@@ -13,8 +12,13 @@ import {
   IErrorsConfiguration,
 } from './errors-configuration';
 import { ErrorsDirective } from './errors.directive';
+import { NgxErrorsFormDirective } from './form.directive';
 
-const declarationsAndExports = [ErrorsDirective, ErrorDirective];
+const declarationsAndExports = [
+  ErrorsDirective,
+  ErrorDirective,
+  NgxErrorsFormDirective,
+];
 
 const defaultConfig: ErrorsConfiguration = {
   showErrorsWhenInput: 'touched',
@@ -36,7 +40,6 @@ export const ERROR_STATE_MATCHER_PROVIDERS: Provider[] = [
 ];
 
 @NgModule({
-  imports: [ReactiveFormsModule],
   declarations: [...declarationsAndExports],
   exports: [...declarationsAndExports],
   providers: [ErrorsConfiguration, ...ERROR_STATE_MATCHER_PROVIDERS],

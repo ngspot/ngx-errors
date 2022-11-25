@@ -1,10 +1,15 @@
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy } from '@angular/compiler';
+import { Component, Input, Optional, Provider, ViewChild } from '@angular/core';
 import { waitForAsync } from '@angular/core/testing';
 import {
   AbstractControl,
   AsyncValidatorFn,
+  ControlContainer,
   FormControl,
   FormGroup,
+  FormsModule,
+  NgForm,
+  NgModelGroup,
   ReactiveFormsModule,
   Validators,
 } from '@angular/forms';
@@ -22,6 +27,7 @@ import {
   IErrorsConfiguration,
 } from './errors-configuration';
 import { ErrorsDirective } from './errors.directive';
+import { NgxErrorsFormDirective } from './form.directive';
 import { NoParentNgxErrorsError, ValueMustBeStringError } from './ngx-errors';
 
 const myAsyncValidator: AsyncValidatorFn = (c: AbstractControl) => {
@@ -36,8 +42,12 @@ const myAsyncValidator: AsyncValidatorFn = (c: AbstractControl) => {
   });
 };
 
-@Component({})
+@Component({
+  changeDetection: ChangeDetectionStrategy.OnPush,
+})
 class TestHostComponent {
+  @ViewChild(NgForm) ngForm: NgForm;
+
   validInitialVal = new FormControl('val', Validators.required);
   invalidInitialVal = new FormControl('', Validators.required);
   multipleErrors = new FormControl('123456', [
@@ -51,20 +61,61 @@ class TestHostComponent {
     withAsyncValidator: new FormControl('', {
       asyncValidators: myAsyncValidator,
     }),
+    address: new FormGroup({
+      street: new FormControl('', Validators.required),
+    }),
   });
+
+  addressModel = { street: '' };
 
   submit() {}
 }
 
-describe('ErrorDirective', () => {
+export const formViewProvider: Provider = {
+  provide: ControlContainer,
+  useFactory: _formViewProviderFactory,
+  deps: [
+    [new Optional(), NgForm],
+    [new Optional(), NgModelGroup],
+  ],
+};
+
+export function _formViewProviderFactory(
+  ngForm: NgForm,
+  ngModelGroup: NgModelGroup
+) {
+  return ngModelGroup || ngForm || null;
+}
+
+@Component({
+  selector: 'app-test-child-address',
+  template: `
+    <input
+      [(ngModel)]="address.street"
+      required
+      name="street"
+      #street="ngModel"
+    />
+    <div [ngxErrors]="street.control">
+      <div ngxError="required">Required</div>
+    </div>
+  `,
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  viewProviders: [formViewProvider],
+})
+class TestChildComponent {
+  @Input() address: { street: string };
+}
+
+describe(ErrorDirective.name, () => {
   const initialConfig: IErrorsConfiguration = {
     showErrorsWhenInput: 'touched',
   };
 
   const createDirective = createDirectiveFactory({
     directive: ErrorDirective,
-    declarations: [ErrorsDirective],
-    imports: [ReactiveFormsModule],
+    declarations: [ErrorsDirective, NgxErrorsFormDirective, TestChildComponent],
+    imports: [ReactiveFormsModule, FormsModule],
     providers: [
       { provide: ErrorsConfiguration, useValue: initialConfig },
       ErrorStateMatchers,
@@ -152,15 +203,15 @@ describe('ErrorDirective', () => {
       actual = spectator.directive.showWhen;
     });
 
-    describe('GIVEN: There is a parent form', () => {
+    describe('GIVEN: There is a parent formGroup', () => {
       describe('GIVEN: there is no override at the directive level', () => {
         Given(() => {
           template = `
-            <form [formGroup]="form">
+            <div [formGroup]="form">
               <div [ngxErrors]="'invalidInitialVal'">
                 <div ngxError="req"></div>
               </div>
-            </form>`;
+            </div>`;
         });
 
         describe('GIVEN: config.showWhen = "touched"', () => {
@@ -217,7 +268,7 @@ describe('ErrorDirective', () => {
       });
     });
 
-    describe('GIVEN: There is no parent form', () => {
+    describe('GIVEN: There is no parent formGroup', () => {
       Given(() => {
         template = `
           <div [ngxErrors]="validInitialVal">
@@ -319,7 +370,7 @@ describe('ErrorDirective', () => {
       });
 
       Then(async () => {
-        await wait(0);
+        await spectator.fixture.whenStable();
         const errors = spectator.queryAll('[ngxerror]:not([hidden])');
         expect(errors.length).toBe(1);
       });
@@ -337,6 +388,35 @@ describe('ErrorDirective', () => {
         </div>
 
         <button type="submit"></button>
+      </form>`;
+    });
+
+    When(
+      waitForAsync(() => {
+        createDirectiveWithConfig(showWhen);
+        spectator.click('button');
+      })
+    );
+
+    ExpectErrorVisibilityForStates({
+      expectedVisibility: true,
+      forStates: ['dirty', 'touched', 'touchedAndDirty', 'formIsSubmitted'],
+    });
+  });
+
+  describe('TEST: submitting a form with nested formGroup should display an error', () => {
+    Given(() => {
+      template = `
+      <form [formGroup]="form" (ngSubmit)="submit()">
+        <input type="number" formControlName="invalidInitialVal" />
+
+        <div [formGroup]="form.get('address')">
+          <div ngxErrors="street">
+            <div ngxError="required">Required</div>
+          </div>
+        </div>
+
+        <button type="submit">Submit</button>
       </form>`;
     });
 
@@ -461,6 +541,35 @@ describe('ErrorDirective', () => {
         expect(spectator.query('#error-outside')).toContainText('min: 10');
       }
     );
+  });
+
+  describe('TEST: directive is inside of child OnPush component', () => {
+    Given(() => {
+      template = `
+      <form>
+        <app-test-child-address [address]="addressModel"></app-test-child-address>
+
+        <button type="submit">Submit</button>
+      </form>`;
+    });
+
+    When(
+      waitForAsync(async () => {
+        createDirectiveWithConfig(showWhen);
+        await spectator.fixture.whenRenderingDone();
+        spectator.hostComponent.ngForm.form.markAllAsTouched();
+      })
+    );
+
+    ExpectErrorVisibilityForStates({
+      expectedVisibility: true,
+      forStates: ['touched', 'formIsSubmitted'],
+    });
+
+    ExpectErrorVisibilityForStates({
+      expectedVisibility: false,
+      forStates: ['dirty', 'touchedAndDirty'],
+    });
   });
 });
 

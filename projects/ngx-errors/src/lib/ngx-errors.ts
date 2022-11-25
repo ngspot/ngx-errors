@@ -36,7 +36,7 @@ export class ControlNotFoundError extends NgxError {
   }
 }
 
-export class ParentFormNotFoundError extends NgxError {
+export class ParentFormGroupNotFoundError extends NgxError {
   constructor(name: string) {
     super(
       `Can't search for control "${name}" because parent FormGroup is not found`

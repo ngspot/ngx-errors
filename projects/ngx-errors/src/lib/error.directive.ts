@@ -68,8 +68,8 @@ export class ErrorDirective implements AfterViewInit, OnDestroy {
   }
 
   private watchForEventsTriggeringVisibilityChange() {
-    const ngSubmit$ = this.errorsDirective.parentForm
-      ? this.errorsDirective.parentForm.ngSubmit
+    const ngSubmit$ = this.errorsDirective.formDirective?.form
+      ? this.errorsDirective.formDirective.form.ngSubmit.asObservable()
       : NEVER;
 
     let touchedChanges$: Observable<boolean>;
@@ -120,7 +120,7 @@ export class ErrorDirective implements AfterViewInit, OnDestroy {
   private calcShouldDisplay(control: AbstractControl) {
     const hasError = control.hasError(this.errorName);
 
-    const form = this.errorsDirective.parentForm;
+    const form = this.errorsDirective.formDirective?.form ?? null;
 
     const errorStateMatcher = this.errorStateMatchers.get(this.showWhen);
 
@@ -184,7 +184,7 @@ export class ErrorDirective implements AfterViewInit, OnDestroy {
 
     if (
       this.showWhen === 'formIsSubmitted' &&
-      !this.errorsDirective.parentForm
+      !this.errorsDirective.parentFormGroupDirective
     ) {
       this.showWhen = 'touched';
     }

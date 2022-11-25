@@ -12,7 +12,7 @@ import { ErrorsDirective } from './errors.directive';
 import {
   ControlNotFoundError,
   NoControlError,
-  ParentFormNotFoundError,
+  ParentFormGroupNotFoundError,
 } from './ngx-errors';
 
 @Component({})
@@ -27,7 +27,7 @@ class TestHostComponent {
   });
 }
 
-describe('ErrorsDirective ', () => {
+describe(ErrorsDirective.name, () => {
   let spectator: SpectatorDirective<ErrorsDirective, TestHostComponent>;
   const createDirective = createDirectiveFactory({
     directive: ErrorsDirective,
@@ -57,12 +57,12 @@ describe('ErrorsDirective ', () => {
       Then('should throw', () => {
         expect(() => {
           createDirective(`<div ngxErrors="something"></div>`);
-        }).toThrow(new ParentFormNotFoundError('something'));
+        }).toThrow(new ParentFormGroupNotFoundError('something'));
       });
     });
   });
 
-  describe('GIVEN: with parent form', () => {
+  describe('GIVEN: with parent formGroup', () => {
     function expectControl(expectedControl: AbstractControl) {
       let actualControl: AbstractControl | undefined;
 
@@ -103,7 +103,7 @@ describe('ErrorsDirective ', () => {
       });
     });
 
-    describe('GIVEN: nested formGroup using formGroupName', () => {
+    describe('GIVEN: formGroup with nested formGroupName', () => {
       Given(() => {
         expect(() => {
           spectator = createDirective(`
@@ -121,7 +121,7 @@ describe('ErrorsDirective ', () => {
       });
     });
 
-    describe('GIVEN: nested formGroup using [formGroup]', () => {
+    describe('GIVEN: formGroup with nested formGroup', () => {
       Given(() => {
         expect(() => {
           spectator = createDirective(`
