@@ -2,33 +2,35 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
-## [3.2.0](https://github.com/ngspot/ngx-errors/compare/v3.1.5...v3.2.0) (2022-02-04)
+### [3.2.1](https://github.com/ngspot/ngx-errors/compare/v3.2.0...v3.2.1) (2022-11-25)
 
+### Bug Fixes
+
+- 🐛 fix compatibility with template-driven forms
+
+## [3.2.0](https://github.com/ngspot/ngx-errors/compare/v3.1.5...v3.2.0) (2022-02-04)
 
 ### Features
 
-* 🎸 move material deps into @ngspot/ngx-errors-material ([ad49c7c](https://github.com/ngspot/ngx-errors/commit/ad49c7cca52a24be83e80fb3738ebcd450a3f5ab)), closes [#9](https://github.com/ngspot/ngx-errors/issues/9)
+- 🎸 move material deps into @ngspot/ngx-errors-material ([ad49c7c](https://github.com/ngspot/ngx-errors/commit/ad49c7cca52a24be83e80fb3738ebcd450a3f5ab)), closes [#9](https://github.com/ngspot/ngx-errors/issues/9)
 
 ### [3.1.5](https://github.com/ngspot/ngx-errors/compare/v3.1.4...v3.1.5) (2022-01-21)
 
-
 ### Bug Fixes
 
-* 🐛 broken matInput without ngModel ([e8d6f47](https://github.com/ngspot/ngx-errors/commit/e8d6f47ee38fa3effeb59ec59787261291f4d07c))
+- 🐛 broken matInput without ngModel ([e8d6f47](https://github.com/ngspot/ngx-errors/commit/e8d6f47ee38fa3effeb59ec59787261291f4d07c))
 
 ### [3.1.4](https://github.com/ngspot/ngx-errors/compare/v3.1.3...v3.1.4) (2022-01-16)
 
-
 ### Bug Fixes
 
-* 🐛 providing errorsModule in the lazy app module ([b2f1488](https://github.com/ngspot/ngx-errors/commit/b2f1488a2d3ea004ca6fa0d25b90c240e60e38c6))
+- 🐛 providing errorsModule in the lazy app module ([b2f1488](https://github.com/ngspot/ngx-errors/commit/b2f1488a2d3ea004ca6fa0d25b90c240e60e38c6))
 
 ### [3.1.3](https://github.com/ngspot/ngx-errors/compare/v3.1.2...v3.1.3) (2022-01-11)
 
-
 ### Bug Fixes
 
-* 🐛 provide config defaults ([5242c70](https://github.com/ngspot/ngx-errors/commit/5242c70a30968af5ea8e9c77b6d755b4886734f8))
+- 🐛 provide config defaults ([5242c70](https://github.com/ngspot/ngx-errors/commit/5242c70a30968af5ea8e9c77b6d755b4886734f8))
 
 ## 3.1.2 (2022-01-11)
 

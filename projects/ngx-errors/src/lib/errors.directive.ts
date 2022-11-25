@@ -16,12 +16,13 @@ import {
 import { BehaviorSubject } from 'rxjs';
 import { distinctUntilChanged, map, shareReplay } from 'rxjs/operators';
 import { ErrorsConfiguration } from './errors-configuration';
+import { NgxErrorsFormDirective } from './form.directive';
 import { filterOutNullish } from './misc';
 import {
   ControlInstanceError,
   ControlNotFoundError,
   NoControlError,
-  ParentFormNotFoundError,
+  ParentFormGroupNotFoundError,
 } from './ngx-errors';
 
 /**
@@ -105,8 +106,15 @@ export class ErrorsDirective implements AfterViewInit {
   );
 
   constructor(
-    @Optional() @SkipSelf() public parentForm: FormGroupDirective | null,
-    @Optional() @SkipSelf() private parentFormGroupName: FormGroupName | null,
+    @Optional()
+    @SkipSelf()
+    public formDirective: NgxErrorsFormDirective | null,
+    @Optional()
+    @SkipSelf()
+    public parentFormGroupDirective: FormGroupDirective | null,
+    @Optional()
+    @SkipSelf()
+    private parentFormGroupName: FormGroupName | null,
     private config: ErrorsConfiguration
   ) {}
 
@@ -138,12 +146,12 @@ export class ErrorsDirective implements AfterViewInit {
     }
 
     if (typeof this._control === 'string') {
-      if (!this.parentForm) {
-        throw new ParentFormNotFoundError(this._control);
+      if (!this.parentFormGroupDirective) {
+        throw new ParentFormGroupNotFoundError(this._control);
       }
 
       const control = !this.parentFormGroupName
-        ? this.parentForm.form.get(this._control)
+        ? this.parentFormGroupDirective.form.get(this._control)
         : this.parentFormGroupName.control.get(this._control);
 
       if (control == null) {
